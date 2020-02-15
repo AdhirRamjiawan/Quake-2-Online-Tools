@@ -2,8 +2,42 @@
     
 </script>
 <script type="text/javascript">
-    var extractor = new Quake2Tools.PakExtractor(true);
+    var extractor = new Quake2Tools.PakExtractor(false);
+    function displayArchive(archive) {
+        console.log(archive);
+        var lumpTable = document.getElementById("lumpTableBody");
+        var tableDataMarkup = "";
+
+        archive.lumps.forEach((lump) => {
+            tableDataMarkup += createTableRow(lump.name, (lump.length / 1024).toFixed(2));
+        });
+
+        lumpTable.innerHTML = tableDataMarkup;
+    }
+
+    function createTableRow() {
+        var markup = "";
+        for (var a=0; a < arguments.length; a++) {
+            markup += createTableColumn(arguments[a]);
+        }
+        return "<tr>" + markup + "</tr>";
+    }
+
+    function createTableColumn(data) {
+        return "<td>"+data+"</td>";
+    }
 </script>
 
 <input type="file" id="fileModel" onchange="extractor.setPakFile(event)" /><br/>
-<button id="btnView" onclick="extractor.viewArchive()">View Archive</button>
+<button id="btnView" onclick="extractor.extractArchive(displayArchive)">View Archive</button>
+
+<h3>Lumps</h3>
+<table border="1">
+    <thead>
+        <th>Path</th>
+        <th>Size (KB)</th>
+    </thead>
+    <tbody id="lumpTableBody">
+        
+    </tbody>
+</table>

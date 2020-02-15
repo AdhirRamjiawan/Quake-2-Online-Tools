@@ -15,17 +15,18 @@ module Quake2Tools {
         private pakFile:File = new File(new Array<BlobPart>(), "");
         private littleEndian: boolean = true;
         private seekIndex : number = 0;
-        
+        public archive: PakArchive;
 
         // 2. get file stream of pak archive
         constructor(private isDebug: boolean) {
+            this.archive = new PakArchive();
         }
 
         public setPakFile(event:any) {
             this.pakFile = event.target.files[0];
         }
 
-        public readPakFile() {
+        public readPakFile(callback: Function) {
             
             let reader = new FileReader();
             reader.readAsArrayBuffer(this.pakFile);
@@ -61,6 +62,10 @@ module Quake2Tools {
                 let lumpCount = lumpCollectionLength / 64;
                 this.debug("lump count", lumpCount);
                 
+                this.archive.header.id = id;
+                this.archive.header.lumpCollectionPosition = lumpCollectionOffset;
+                this.archive.header.lumpCollectionLength = lumpCollectionLength;
+
                 // 5. for each lump
                 for (var lumpIndex = 0; lumpIndex < lumpCount; lumpIndex++) {
                     // 5. a. read lump name, name is 56 bytes.
@@ -79,14 +84,15 @@ module Quake2Tools {
                     // 5. d. using a new file stream, use the file position (from 5.b) to go to that position in the main pak stream
                     // 5. e. read file length bytes from current position as determined from (5.c).
                     // 5. f. write new file stream for lump as a new file and go back to 5.a. to repeat the process for all lumps.
-                }
 
-                
+                    this.archive.lumpCollection.lumps.push(new PakLump(lumpName, lumpFilePosition, lumpFileLength));
+                }
+                callback(this.archive.toJson());
             };
         }
 
-        public viewArchive() {
-            this.readPakFile();
+        public extractArchive(callback: Function) {
+            this.readPakFile(callback);
         }
 
         private debug(message: string, value: any) {
