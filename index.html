@@ -3,14 +3,38 @@
 </script>
 <script type="text/javascript">
     var extractor = new Quake2Tools.PakExtractor(false);
+    var paginationSize = 50;
+    var globalArchive = null;
+
     function displayArchive(archive) {
-        console.log(archive);
+        globalArchive = archive;
+        loadArchivePage(0);
+        displayPaginationButtons();
+    }
+
+    function displayPaginationButtons() {
+        var paginationButtonList = document.getElementById("paginationButtonList");
+        var paginationButtonListMarkup = "";
+        
+        var numberOfButtons = globalArchive.lumps.length / paginationSize;
+
+        for (var i =0 ; i< numberOfButtons; i++) {
+            paginationButtonListMarkup += createPaginationButton(i);
+        }
+        paginationButtonList.innerHTML = paginationButtonListMarkup;
+    }
+
+    function loadArchivePage(pageNumber) {
         var lumpTable = document.getElementById("lumpTableBody");
         var tableDataMarkup = "";
+        lumpTable.innerHTML = tableDataMarkup;
+        
+        var startIndex = (pageNumber * paginationSize);
+        var endIndex = startIndex + paginationSize;
 
-        archive.lumps.forEach((lump) => {
-            tableDataMarkup += createTableRow(lump.name, (lump.length / 1024).toFixed(2));
-        });
+        for (var i = startIndex; i < endIndex; i++) {
+            tableDataMarkup += createTableRow(globalArchive.lumps[i].name, (globalArchive.lumps[i].length / 1024).toFixed(2));
+        }
 
         lumpTable.innerHTML = tableDataMarkup;
     }
@@ -25,6 +49,9 @@
 
     function createTableColumn(data) {
         return "<td>"+data+"</td>";
+    }
+    function createPaginationButton(pageNumber) {
+        return '<button onclick="loadArchivePage('+pageNumber+')">'+(pageNumber + 1)+'</button>';
     }
 </script>
 
@@ -41,3 +68,6 @@
         
     </tbody>
 </table>
+<div id="paginationButtonList">
+    
+</div>
