@@ -1,0 +1,9 @@
+<script src="dist/q2tools.js">
+    
+</script>
+<script type="text/javascript">
+    var extractor = new Quake2Tools.PakExtractor(true);
+</script>
+
+<input type="file" id="fileModel" onchange="extractor.setPakFile(event)" /><br/>
+<button id="btnView" onclick="extractor.viewArchive()">View Archive</button>
