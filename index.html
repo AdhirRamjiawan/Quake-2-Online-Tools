@@ -3,11 +3,38 @@
 </script>
 <script type="text/javascript">
     var extractor = new Quake2Tools.PakExtractor(false);
-    var paginationSize = 50;
+    var paginationSize = 30;
     var globalArchive = null;
+    var filteredLumps = [];
 
     function displayArchive(archive) {
         globalArchive = archive;
+
+        for (var i=0; i< archive.lumps.length; i++) {
+            filteredLumps.push(archive.lumps[i]);
+        }
+
+        loadArchivePage(0);
+        displayPaginationButtons();
+    }
+
+    function search() {
+        var searchTerm = document.getElementById("searchTerm");
+        filteredLumps = [];
+
+        console.log("searching: [" + searchTerm.value + "]");
+
+        if (searchTerm.value.trim() === "") {
+            filteredLumps = globalArchive.lumps;
+        } else {
+            for (var i=0; i < globalArchive.lumps.length; i++) {
+                if (globalArchive.lumps[i].name.indexOf(searchTerm.value) > -1)
+                    filteredLumps.push(globalArchive.lumps[i]);
+            }
+        }
+
+        console.log(filteredLumps);
+
         loadArchivePage(0);
         displayPaginationButtons();
     }
@@ -16,7 +43,7 @@
         var paginationButtonList = document.getElementById("paginationButtonList");
         var paginationButtonListMarkup = "";
         
-        var numberOfButtons = globalArchive.lumps.length / paginationSize;
+        var numberOfButtons = filteredLumps.length / paginationSize;
 
         for (var i =0 ; i< numberOfButtons; i++) {
             paginationButtonListMarkup += createPaginationButton(i);
@@ -25,6 +52,7 @@
     }
 
     function loadArchivePage(pageNumber) {
+        var pageNumberTextBox = document.getElementById("pageNumber");
         var lumpTable = document.getElementById("lumpTableBody");
         var tableDataMarkup = "";
         lumpTable.innerHTML = tableDataMarkup;
@@ -33,10 +61,14 @@
         var endIndex = startIndex + paginationSize;
 
         for (var i = startIndex; i < endIndex; i++) {
-            tableDataMarkup += createTableRow(globalArchive.lumps[i].name, (globalArchive.lumps[i].length / 1024).toFixed(2));
+            if (filteredLumps[i]) {
+                tableDataMarkup += createTableRow(filteredLumps[i].name, (filteredLumps[i].length / 1024).toFixed(2));
+            }
+            
         }
 
         lumpTable.innerHTML = tableDataMarkup;
+        pageNumberTextBox.setAttribute("value", pageNumber + 1);
     }
 
     function createTableRow() {
@@ -59,6 +91,8 @@
 <button id="btnView" onclick="extractor.extractArchive(displayArchive)">View Archive</button>
 
 <h3>Lumps</h3>
+<label>Search: </label><input type="text" id="searchTerm"/><button onclick="search()">Search in Archive</button><br/>
+<label>Page </label><input type="text" readonly id="pageNumber"/>
 <table border="1">
     <thead>
         <th>Path</th>
