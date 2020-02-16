@@ -7,6 +7,11 @@
     var globalArchive = null;
     var filteredLumps = [];
 
+    function updatePageSize() {
+        var pageSize = document.getElementById("pageSize");
+        paginationSize = pageSize.value;
+    }
+
     function displayArchive(archive) {
         globalArchive = archive;
 
@@ -92,7 +97,14 @@
 
 <h3>Lumps</h3>
 <label>Search: </label><input type="text" id="searchTerm"/><button onclick="search()">Search in Archive</button><br/>
-<label>Page </label><input type="text" readonly id="pageNumber"/>
+<label>Page </label><input type="text" readonly id="pageNumber"/><br/>
+Page Size<select id="pageSize" onchange="updatePageSize()">
+    <option value="30" selected>30</option>
+    <option value="50">50</option>
+    <option value="100">100</option>
+    <option value="200">200</option>
+    <option value="500">500</option>
+</select>
 <table border="1">
     <thead>
         <th>Path</th>
