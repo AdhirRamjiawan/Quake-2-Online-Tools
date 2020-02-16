@@ -92,11 +92,12 @@ module Quake2Tools {
         }
 
         public extractArchive(callback: Function) {
+            this.resetState();
             this.readPakFile(callback);
         }
 
         private debug(message: string, value: any) {
-            if (this.isDebug) {
+            if (this.isDebug) { // change this to a compile time flag
                 console.log(message, value);
             }
         }
@@ -121,6 +122,11 @@ module Quake2Tools {
             let result = dataView.getInt32(this.seekIndex, this.littleEndian);
             this.seekIndex += 4;
             return result;
+        }
+
+        private resetState() {
+            this.seekIndex = 0;
+            this.archive = new PakArchive();
         }
     }
 }

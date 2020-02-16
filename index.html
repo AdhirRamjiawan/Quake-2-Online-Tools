@@ -6,17 +6,47 @@
     var paginationSize = 30;
     var globalArchive = null;
     var filteredLumps = [];
+    var summaryStats = [];
+
+    function getFileExtension(lumpPath) {
+        var extension = '';
+
+        for (var i = lumpPath.length-1; i > 0; i--) {
+            if (lumpPath[i] === '.') {
+                for (var k = i + 1; ; k++) {
+
+                    if (lumpPath.charCodeAt(k) === 0)
+                    break;
+
+                    extension += lumpPath[k];
+                }
+                break;
+            }
+        }
+
+        return extension;
+    }
 
     function updatePageSize() {
         var pageSize = document.getElementById("pageSize");
         paginationSize = pageSize.value;
     }
 
+    function resetState() {
+        filteredLumps = [];
+        summaryStats = [];
+    }
+
     function displayArchive(archive) {
+        resetState();
         globalArchive = archive;
 
         for (var i=0; i< archive.lumps.length; i++) {
             filteredLumps.push(archive.lumps[i]);
+
+            summaryStats.push({
+                extension: getFileExtension(filteredLumps[i].name)
+            });
         }
 
         loadArchivePage(0);
@@ -38,8 +68,6 @@
             }
         }
 
-        console.log(filteredLumps);
-
         loadArchivePage(0);
         displayPaginationButtons();
     }
@@ -56,6 +84,50 @@
         paginationButtonList.innerHTML = paginationButtonListMarkup;
     }
 
+    function getDistinct(list) {
+        var distinctList = [];
+
+        for (var i= 0; i < list.length; i++) {
+            var found = false;
+            for (var k = 0; k < distinctList.length; k++) {
+                
+                if (list[i].extension === distinctList[k].extension) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                distinctList.push(list[i]);
+            }
+        }
+
+        return distinctList;
+    }
+
+    function calculateSummaryCounts() {
+        var distinctList = getDistinct(summaryStats);
+        var summaryStatsTable = document.getElementById("summaryStatsTableBody");
+        var tableDataMarkup = "";
+        summaryStatsTable.innerHTML = tableDataMarkup;
+
+        for (var i = 0; i < distinctList.length; i++) {
+            var tempCount = 0;
+
+            for (var k = 0; k < summaryStats.length; k++) {
+                if (distinctList[i].extension === summaryStats[k].extension) {
+                    tempCount++;
+                }
+            }
+
+            distinctList[i].count = tempCount;
+            tableDataMarkup += createTableRow(distinctList[i].extension, tempCount);
+        }
+
+        summaryStatsTable.innerHTML = tableDataMarkup;
+        summaryStats = distinctList;
+    }
+
     function loadArchivePage(pageNumber) {
         var pageNumberTextBox = document.getElementById("pageNumber");
         var lumpTable = document.getElementById("lumpTableBody");
@@ -69,8 +141,9 @@
             if (filteredLumps[i]) {
                 tableDataMarkup += createTableRow(filteredLumps[i].name, (filteredLumps[i].length / 1024).toFixed(2));
             }
-            
         }
+
+        calculateSummaryCounts();
 
         lumpTable.innerHTML = tableDataMarkup;
         pageNumberTextBox.setAttribute("value", pageNumber + 1);
@@ -97,6 +170,18 @@
 
 <h3>Lumps</h3>
 <label>Search: </label><input type="text" id="searchTerm"/><button onclick="search()">Search in Archive</button><br/>
+
+<table border="1">
+    <caption>Summary Stats</caption>
+    <thead>
+        <th>Extension</th>
+        <th>Count</th>
+    </thead>
+    <tbody id="summaryStatsTableBody">
+        
+    </tbody>
+</table>
+
 <label>Page </label><input type="text" readonly id="pageNumber"/><br/>
 Page Size<select id="pageSize" onchange="updatePageSize()">
     <option value="30" selected>30</option>
@@ -106,6 +191,7 @@ Page Size<select id="pageSize" onchange="updatePageSize()">
     <option value="500">500</option>
 </select>
 <table border="1">
+    <caption>Lump files</caption>
     <thead>
         <th>Path</th>
         <th>Size (KB)</th>
