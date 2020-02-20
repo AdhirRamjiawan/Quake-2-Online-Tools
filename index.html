@@ -42,10 +42,13 @@
         globalArchive = archive;
 
         for (var i=0; i< archive.lumps.length; i++) {
+            var fileExtension = getFileExtension(archive.lumps[i].name);
+
             filteredLumps.push(archive.lumps[i]);
+            filteredLumps[i].fileExtension = fileExtension;
 
             summaryStats.push({
-                extension: getFileExtension(filteredLumps[i].name)
+                extension: fileExtension
             });
         }
 
@@ -139,7 +142,11 @@
 
         for (var i = startIndex; i < endIndex; i++) {
             if (filteredLumps[i]) {
-                tableDataMarkup += createTableRow(filteredLumps[i].name, (filteredLumps[i].length / 1024).toFixed(2));
+                tableDataMarkup += createTableRow(
+                        createPreviewLink(filteredLumps[i]),
+                        filteredLumps[i].name, 
+                        (filteredLumps[i].length / 1024).toFixed(2)
+                    );
             }
         }
 
@@ -147,6 +154,14 @@
 
         lumpTable.innerHTML = tableDataMarkup;
         pageNumberTextBox.setAttribute("value", pageNumber + 1);
+    }
+
+    function createPreviewLink(filteredLump) {
+        var link = '<a href="#" target="_blank">Preview</a>';
+        if (filteredLump.fileExtension === "cfg") {
+
+        }
+        return link;
     }
 
     function createTableRow() {
@@ -193,6 +208,7 @@ Page Size<select id="pageSize" onchange="updatePageSize()">
 <table border="1">
     <caption>Lump files</caption>
     <thead>
+        <th>Preview</th>
         <th>Path</th>
         <th>Size (KB)</th>
     </thead>
