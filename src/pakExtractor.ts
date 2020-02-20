@@ -15,7 +15,10 @@ module Quake2Tools {
         private pakFile:File = new File(new Array<BlobPart>(), "");
         private littleEndian: boolean = true;
         private seekIndex : number = 0;
+        private reader = new FileReader();
         public archive: PakArchive;
+        
+
 
         // 2. get file stream of pak archive
         constructor(private isDebug: boolean) {
@@ -28,13 +31,12 @@ module Quake2Tools {
 
         public readPakFile(callback: Function) {
             
-            let reader = new FileReader();
-            reader.readAsArrayBuffer(this.pakFile);
+            this.reader.readAsArrayBuffer(this.pakFile);
             
 
-            reader.onload = () => {
+            this.reader.onload = () => {
                 // 3. a. read header of pak archive
-                let dataView:DataView = new DataView(<ArrayBuffer>reader.result);
+                let dataView:DataView = new DataView(<ArrayBuffer>this.reader.result);
 
                 // 3. b. read int at current position for ident. Move stream by int byte size
                 let id = this.getInt32AndMove(dataView);
@@ -94,6 +96,15 @@ module Quake2Tools {
         public extractArchive(callback: Function) {
             this.resetState();
             this.readPakFile(callback);
+        }
+
+        // convert to using generics instead of "AsString"
+        public extractSpecificLumpAsString(lumpPosition:number, lumpLength:number): string {
+            let dataView:DataView = new DataView(<ArrayBuffer>this.reader.result);
+            let bufView:Uint8Array = new Uint8Array(dataView.buffer, lumpPosition, lumpLength);
+            let numberArray: number[] = this.Uint8ArrayToNumberArray(bufView);
+            let result = String.fromCharCode.apply(null, numberArray);
+            return result;
         }
 
         private debug(message: string, value: any) {

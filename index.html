@@ -143,7 +143,7 @@
         for (var i = startIndex; i < endIndex; i++) {
             if (filteredLumps[i]) {
                 tableDataMarkup += createTableRow(
-                        createPreviewLink(filteredLumps[i]),
+                        createPreviewLink(i),
                         filteredLumps[i].name, 
                         (filteredLumps[i].length / 1024).toFixed(2)
                     );
@@ -156,12 +156,24 @@
         pageNumberTextBox.setAttribute("value", pageNumber + 1);
     }
 
-    function createPreviewLink(filteredLump) {
-        var link = '<a href="#" target="_blank">Preview</a>';
-        if (filteredLump.fileExtension === "cfg") {
+    function previewFile(e, filteredLumpIndex) {
+        e.preventDefault();
+        var previewPane = document.getElementById("previewPane");
+        var htmlContent = "";
+        var lump = filteredLumps[filteredLumpIndex];
 
+        if (lump.fileExtension === "cfg") {
+            var data = extractor.extractSpecificLumpAsString(lump.position, lump.length);
+            htmlContent += '<textarea readonly>{0}</textarea>'
+                .replace("{0}", data);
         }
-        return link;
+
+        previewPane.innerHTML = htmlContent;
+    }
+
+    function createPreviewLink(filteredLumpIndex) {
+        return  '<a href="#" onclick="previewFile(event, {0})" >Preview</a>'
+                .replace("{0}", filteredLumpIndex);
     }
 
     function createTableRow() {
@@ -196,6 +208,10 @@
         
     </tbody>
 </table>
+
+<div id="previewPane">
+
+</div>
 
 <label>Page </label><input type="text" readonly id="pageNumber"/><br/>
 Page Size<select id="pageSize" onchange="updatePageSize()">
