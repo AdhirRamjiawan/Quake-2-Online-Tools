@@ -1,202 +1,15 @@
 <script src="dist/q2tools.js">
     
 </script>
-<script type="text/javascript">
-    var extractor = new Quake2Tools.PakExtractor(false);
-    var paginationSize = 30;
-    var globalArchive = null;
-    var filteredLumps = [];
-    var summaryStats = [];
-
-    function getFileExtension(lumpPath) {
-        var extension = '';
-
-        for (var i = lumpPath.length-1; i > 0; i--) {
-            if (lumpPath[i] === '.') {
-                for (var k = i + 1; ; k++) {
-
-                    if (lumpPath.charCodeAt(k) === 0)
-                    break;
-
-                    extension += lumpPath[k];
-                }
-                break;
-            }
-        }
-
-        return extension;
-    }
-
-    function updatePageSize() {
-        var pageSize = document.getElementById("pageSize");
-        paginationSize = pageSize.value;
-    }
-
-    function resetState() {
-        filteredLumps = [];
-        summaryStats = [];
-    }
-
-    function displayArchive(archive) {
-        resetState();
-        globalArchive = archive;
-
-        for (var i=0; i< archive.lumps.length; i++) {
-            var fileExtension = getFileExtension(archive.lumps[i].name);
-
-            filteredLumps.push(archive.lumps[i]);
-            filteredLumps[i].fileExtension = fileExtension;
-
-            summaryStats.push({
-                extension: fileExtension
-            });
-        }
-
-        loadArchivePage(0);
-        displayPaginationButtons();
-    }
-
-    function search() {
-        var searchTerm = document.getElementById("searchTerm");
-        filteredLumps = [];
-
-        console.log("searching: [" + searchTerm.value + "]");
-
-        if (searchTerm.value.trim() === "") {
-            filteredLumps = globalArchive.lumps;
-        } else {
-            for (var i=0; i < globalArchive.lumps.length; i++) {
-                if (globalArchive.lumps[i].name.indexOf(searchTerm.value) > -1)
-                    filteredLumps.push(globalArchive.lumps[i]);
-            }
-        }
-
-        loadArchivePage(0);
-        displayPaginationButtons();
-    }
-
-    function displayPaginationButtons() {
-        var paginationButtonList = document.getElementById("paginationButtonList");
-        var paginationButtonListMarkup = "";
-        
-        var numberOfButtons = filteredLumps.length / paginationSize;
-
-        for (var i =0 ; i< numberOfButtons; i++) {
-            paginationButtonListMarkup += createPaginationButton(i);
-        }
-        paginationButtonList.innerHTML = paginationButtonListMarkup;
-    }
-
-    function getDistinct(list) {
-        var distinctList = [];
-
-        for (var i= 0; i < list.length; i++) {
-            var found = false;
-            for (var k = 0; k < distinctList.length; k++) {
-                
-                if (list[i].extension === distinctList[k].extension) {
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found) {
-                distinctList.push(list[i]);
-            }
-        }
-
-        return distinctList;
-    }
-
-    function calculateSummaryCounts() {
-        var distinctList = getDistinct(summaryStats);
-        var summaryStatsTable = document.getElementById("summaryStatsTableBody");
-        var tableDataMarkup = "";
-        summaryStatsTable.innerHTML = tableDataMarkup;
-
-        for (var i = 0; i < distinctList.length; i++) {
-            var tempCount = 0;
-
-            for (var k = 0; k < summaryStats.length; k++) {
-                if (distinctList[i].extension === summaryStats[k].extension) {
-                    tempCount++;
-                }
-            }
-
-            distinctList[i].count = tempCount;
-            tableDataMarkup += createTableRow(distinctList[i].extension, tempCount);
-        }
-
-        summaryStatsTable.innerHTML = tableDataMarkup;
-        summaryStats = distinctList;
-    }
-
-    function loadArchivePage(pageNumber) {
-        var pageNumberTextBox = document.getElementById("pageNumber");
-        var lumpTable = document.getElementById("lumpTableBody");
-        var tableDataMarkup = "";
-        lumpTable.innerHTML = tableDataMarkup;
-        
-        var startIndex = (pageNumber * paginationSize);
-        var endIndex = startIndex + paginationSize;
-
-        for (var i = startIndex; i < endIndex; i++) {
-            if (filteredLumps[i]) {
-                tableDataMarkup += createTableRow(
-                        createPreviewLink(i),
-                        filteredLumps[i].name, 
-                        (filteredLumps[i].length / 1024).toFixed(2)
-                    );
-            }
-        }
-
-        calculateSummaryCounts();
-
-        lumpTable.innerHTML = tableDataMarkup;
-        pageNumberTextBox.setAttribute("value", pageNumber + 1);
-    }
-
-    function previewFile(e, filteredLumpIndex) {
-        e.preventDefault();
-        var previewPane = document.getElementById("previewPane");
-        var htmlContent = "";
-        var lump = filteredLumps[filteredLumpIndex];
-
-        if (lump.fileExtension === "cfg") {
-            var data = extractor.extractSpecificLumpAsString(lump.position, lump.length);
-            htmlContent += '<textarea readonly>{0}</textarea>'
-                .replace("{0}", data);
-        }
-
-        previewPane.innerHTML = htmlContent;
-    }
-
-    function createPreviewLink(filteredLumpIndex) {
-        return  '<a href="#" onclick="previewFile(event, {0})" >Preview</a>'
-                .replace("{0}", filteredLumpIndex);
-    }
-
-    function createTableRow() {
-        var markup = "";
-        for (var a=0; a < arguments.length; a++) {
-            markup += createTableColumn(arguments[a]);
-        }
-        return "<tr>" + markup + "</tr>";
-    }
-
-    function createTableColumn(data) {
-        return "<td>"+data+"</td>";
-    }
-    function createPaginationButton(pageNumber) {
-        return '<button onclick="loadArchivePage('+pageNumber+')">'+(pageNumber + 1)+'</button>';
-    }
+<script>
+    var pakUi = new Quake2Tools.PakUi();
 </script>
 
-<input type="file" id="fileModel" onchange="extractor.setPakFile(event)" /><br/>
-<button id="btnView" onclick="extractor.extractArchive(displayArchive)">View Archive</button>
+<input type="file" id="fileModel" onchange="pakUi.setPakFile(event)" /><br/>
+<button id="btnView" onclick="pakUi.extractArchive()">View Archive</button>
 
 <h3>Lumps</h3>
-<label>Search: </label><input type="text" id="searchTerm"/><button onclick="search()">Search in Archive</button><br/>
+<label>Search: </label><input type="text" id="searchTerm"/><button onclick="pakUi.search()">Search in Archive</button><br/>
 
 <table border="1">
     <caption>Summary Stats</caption>
@@ -217,7 +30,7 @@
 
 
 <label>Page </label><input type="text" readonly id="pageNumber"/><br/>
-Page Size<select id="pageSize" onchange="updatePageSize()">
+Page Size<select id="pageSize" onchange="pakUi.updatePageSize()">
     <option value="30" selected>30</option>
     <option value="50">50</option>
     <option value="100">100</option>

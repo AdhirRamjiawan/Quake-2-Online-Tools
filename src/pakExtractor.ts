@@ -107,6 +107,13 @@ module Quake2Tools {
             return result;
         }
 
+        // convert to using generics instead of "AsString"
+        public extractSpecificLumpAsBinary(lumpPosition:number, lumpLength:number): Uint8Array {
+            let dataView:DataView = new DataView(<ArrayBuffer>this.reader.result);
+            let bufView:Uint8Array = new Uint8Array(dataView.buffer, lumpPosition, lumpLength);
+            return bufView;
+        }
+
         private debug(message: string, value: any) {
             if (this.isDebug) { // change this to a compile time flag
                 console.log(message, value);
