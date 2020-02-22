@@ -4,8 +4,7 @@ module Quake2Tools {
         fileExtension: string;
         name: string;
         position: number;
-        length: number
-        ;
+        length: number;
     }
 
     interface IUiSummaryStats {
@@ -31,7 +30,7 @@ module Quake2Tools {
             this.extractor.setPakFile(event);
         }
 
-        private getFileExtension(lumpPath:String) {
+        private getFileExtension(lumpPath:String) : string {
             var extension = '';
     
             for (var i = lumpPath.length-1; i > 0; i--) {
@@ -168,6 +167,7 @@ module Quake2Tools {
                 if (this.filteredLumps[i]) {
                     tableDataMarkup += this.createTableRow(
                             this.createPreviewLink(i),
+                            this.createDownloadLink(i),
                             this.filteredLumps[i].name, 
                             (this.filteredLumps[i].length / 1024).toFixed(2)
                         );
@@ -198,6 +198,16 @@ module Quake2Tools {
     
             previewPane.innerHTML = htmlContent;
         }
+
+        public downloadFile(e: Event, filteredLumpIndex: number) {
+            e.preventDefault();
+            let lump = this.filteredLumps[filteredLumpIndex];
+            let lumpData = this.extractor.extractSpecificLumpAsBinary(lump.position, lump.length);
+            let dataUri: string = URL.createObjectURL(new Blob([lumpData], { type: 'application/text'}));
+            //let dataUri: string = URL.createObjectURL(new Blob([lumpData]));
+            window.open(dataUri, "_blank");
+            URL.revokeObjectURL(dataUri);
+        }
     
         private playSound(soundData: any) {
             var context = new AudioContext();
@@ -215,6 +225,11 @@ module Quake2Tools {
             return  '<a href="#" onclick="pakUi.previewFile(event, {0})" >Preview</a>'
                     .replace("{0}", filteredLumpIndex.toString());
         }
+
+        private createDownloadLink(filteredLumpIndex: number) {
+            return  '<a href="#" onclick="pakUi.downloadFile(event, {0})" >Download</a>'
+                    .replace("{0}", filteredLumpIndex.toString());
+        }
     
         private createTableRow(...args:any[]) {
             var markup = "";
@@ -229,7 +244,7 @@ module Quake2Tools {
         }
 
         private createPaginationButton(pageNumber: number) {
-            return '<button onclick="loadArchivePage('+pageNumber+')">'+(pageNumber + 1)+'</button>';
+            return '<button onclick="pakUi.loadArchivePage('+pageNumber+')">'+(pageNumber + 1)+'</button>';
         }
 
         public extractArchive() {
