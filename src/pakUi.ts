@@ -204,16 +204,17 @@ module Quake2Tools {
             let lump = this.filteredLumps[filteredLumpIndex];
             let lumpData = this.extractor.extractSpecificLumpAsBinary(lump.position, lump.length);
             let dataUri: string = URL.createObjectURL(new Blob([lumpData], { type: 'application/text'}));
-            //let dataUri: string = URL.createObjectURL(new Blob([lumpData]));
             window.open(dataUri, "_blank");
             URL.revokeObjectURL(dataUri);
         }
     
         private playSound(soundData: any) {
             var context = new AudioContext();
-            var bufferSource = context.createBuffer(1, soundData.length, 16);
-            //bufferSource;
-            //bufferSouce.connect(context.destination);
+            var buffer = context.createBuffer(1, 22050, 44100);
+            var bufferSource = context.createBufferSource();
+            /*bufferSource.buffer = new AudioBuffer() soundData;
+            bufferSource.connect(context.destination);
+            bufferSource.start();*/
         }
     
         private createPreviewLink(filteredLumpIndex: number) {
