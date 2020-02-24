@@ -16,12 +16,14 @@ module Quake2Tools {
         private littleEndian: boolean = true;
         private seekIndex : number = 0;
         private reader = new FileReader();
-        public archive: PakArchive;
-        
+        private dataView:DataView = new DataView(new ArrayBuffer(0));
 
+        public archive: PakArchive;
+        public wavExtractor: WavExtractor = new WavExtractor();
 
         // 2. get file stream of pak archive
         constructor(private isDebug: boolean) {
+            Debugging.isDebug = isDebug;
             this.archive = new PakArchive();
         }
 
@@ -36,12 +38,12 @@ module Quake2Tools {
 
             this.reader.onload = () => {
                 // 3. a. read header of pak archive
-                let dataView:DataView = new DataView(<ArrayBuffer>this.reader.result);
+                this.dataView = new DataView(<ArrayBuffer>this.reader.result);
 
                 // 3. b. read int at current position for ident. Move stream by int byte size
-                let id = this.getInt32AndMove(dataView);
+                let id = this.getInt32AndMove(this.dataView);
 
-                this.debug("Header id", id);
+                Debugging.debug("Header id", id);
 
                 if (id !== this.PAK_HEADER) {
                     console.error('Invalid PAK file');
@@ -49,20 +51,20 @@ module Quake2Tools {
                 }
 
                 // 3. c. read int at current position for dirofs. Move stream by int byte size
-                let lumpCollectionOffset = this.getInt32AndMove(dataView);
-                this.debug("lump collection offset", lumpCollectionOffset);
+                let lumpCollectionOffset = this.getInt32AndMove(this.dataView);
+                Debugging.debug("lump collection offset", lumpCollectionOffset);
 
                 // 3. d. read int at current position for dirlen. move stream by int byte size.
-                let lumpCollectionLength = this.getInt32AndMove(dataView);
-                this.debug("lump collection length", lumpCollectionLength);
+                let lumpCollectionLength = this.getInt32AndMove(this.dataView);
+                Debugging.debug("lump collection length", lumpCollectionLength);
 
                 // 3. e.  move the file stream passed header (dirOfs - 12 bytes)
                 this.seekIndex += (lumpCollectionOffset - 12);
-                this.debug("seek index 3.e.", this.seekIndex);
+                Debugging.debug("seek index 3.e.", this.seekIndex);
 
                 // 4. work out number of lumps. dirLen / 64. 
                 let lumpCount = lumpCollectionLength / 64;
-                this.debug("lump count", lumpCount);
+                Debugging.debug("lump count", lumpCount);
                 
                 this.archive.header.id = id;
                 this.archive.header.lumpCollectionPosition = lumpCollectionOffset;
@@ -71,15 +73,15 @@ module Quake2Tools {
                 // 5. for each lump
                 for (var lumpIndex = 0; lumpIndex < lumpCount; lumpIndex++) {
                     // 5. a. read lump name, name is 56 bytes.
-                    let lumpName:string = this.getStringAndMove(dataView, 56);
-                    this.debug("lump", lumpName);
+                    let lumpName:string = this.getStringAndMove(this.dataView, 56);
+                    Debugging.debug("lump", lumpName);
                     
                     // VVVV--(TODO) We just want the file names for now--VVVV
                     // 5. b. read int at current position which is the file position (move ahead by int size in bytes). Swap ints?
-                    let lumpFilePosition: number = this.getInt32AndMove(dataView);
+                    let lumpFilePosition: number = this.getInt32AndMove(this.dataView);
 
                     // 5. c. read int at current position which is the file length (move ahead by int size in bytes) Swap ints?
-                    let lumpFileLength: number = this.getInt32AndMove(dataView);
+                    let lumpFileLength: number = this.getInt32AndMove(this.dataView);
 
 
                     // VVVV -- (TODO) generate local/embedded hyperlinks to download each file -- VVVV
@@ -114,12 +116,17 @@ module Quake2Tools {
             return bufView;
         }
 
-        private debug(message: string, value: any) {
-            if (this.isDebug) { // change this to a compile time flag
-                console.log(message, value);
-            }
+        public getWavSound(position:number, length:number) : Wav {
+            let wavExtractor = new WavExtractor();
+            wavExtractor.dataView = this.dataView;
+            wavExtractor.position = position;
+            wavExtractor.length = length;
+            return wavExtractor.extract();
         }
 
+
+
+        // make use of DataViewUtils.ts
         private getStringAndMove(dataView: DataView, offset: number) : string {
             let bufView:Uint8Array = new Uint8Array(dataView.buffer, this.seekIndex, offset);
             let numberArray: number[] = this.Uint8ArrayToNumberArray(bufView);
@@ -127,7 +134,8 @@ module Quake2Tools {
             this.seekIndex += offset;
             return result;
         }
-
+        
+        // make use of DataViewUtils.ts
         private Uint8ArrayToNumberArray(array:Uint8Array) : number[]{
             let result : number[] = [];
 
@@ -136,8 +144,10 @@ module Quake2Tools {
 
             return result;
         }
-        private getInt32AndMove(dataView: DataView) :number {
-            let result = dataView.getInt32(this.seekIndex, this.littleEndian);
+
+        // make use of DataViewUtils.ts
+        private getInt32AndMove(dataView: DataView, littleEndian: boolean = this.littleEndian) :number {
+            let result = dataView.getInt32(this.seekIndex, littleEndian);
             this.seekIndex += 4;
             return result;
         }

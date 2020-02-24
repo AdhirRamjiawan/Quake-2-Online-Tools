@@ -191,9 +191,8 @@ module Quake2Tools {
                 htmlContent += '<textarea readonly>{0}</textarea>'
                     .replace("{0}", data);
             } else if (lump.fileExtension === "wav") {
-                let data = this.extractor.extractSpecificLumpAsBinary(lump.position, lump.length);
-                console.log(data);
-                this.playSound(data);
+                //let data = this.extractor.extractSpecificLumpAsBinary(lump.position, lump.length);
+                this.playSound(lump.position, lump.length);
             }
     
             previewPane.innerHTML = htmlContent;
@@ -208,10 +207,11 @@ module Quake2Tools {
             URL.revokeObjectURL(dataUri);
         }
     
-        private playSound(soundData: any) {
-            var context = new AudioContext();
+        private playSound(position: number, length: number) {            
+            let wav:Wav = this.extractor.getWavSound(position, length);
+            /*var context = new AudioContext();
             var buffer = context.createBuffer(1, 22050, 44100);
-            var bufferSource = context.createBufferSource();
+            var bufferSource = context.createBufferSource();*/
             /*bufferSource.buffer = new AudioBuffer() soundData;
             bufferSource.connect(context.destination);
             bufferSource.start();*/
