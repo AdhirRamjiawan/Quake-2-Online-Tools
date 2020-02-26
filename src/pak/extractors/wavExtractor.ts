@@ -90,6 +90,7 @@ module Quake2Tools {
             Debugging.debug("Wav data sub chunk",
                 result.subChunk2Id,
                 result.subChunk2Size,
+                result.data.length,
                 result.data);
 
             return result;

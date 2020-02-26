@@ -209,12 +209,30 @@ module Quake2Tools {
     
         private playSound(position: number, length: number) {            
             let wav:Wav = this.extractor.getWavSound(position, length);
-            /*var context = new AudioContext();
-            var buffer = context.createBuffer(1, 22050, 44100);
-            var bufferSource = context.createBufferSource();*/
-            /*bufferSource.buffer = new AudioBuffer() soundData;
+            var context = new AudioContext();
+
+            var frameCount = wav.dataSubChunk.subChunk2Size / wav.fmtSubChunk.numChannels;
+
+            var buffer = context.createBuffer(
+                wav.fmtSubChunk.numChannels, 
+                frameCount, 
+                wav.fmtSubChunk.sampleRate);
+
+            var currentBufferedData = buffer.getChannelData(0);
+
+            var maxAmplitude = Math.max(...DataViewUtils.Uint8ArrayToNumberArray(wav.dataSubChunk.data));
+
+            for (var i = 0; i < frameCount; i++) {
+                currentBufferedData[i] =  
+                    (wav.dataSubChunk.data[i] / maxAmplitude);
+            }
+
+            console.log(currentBufferedData);
+
+            var bufferSource = context.createBufferSource();
+            bufferSource.buffer = buffer;
             bufferSource.connect(context.destination);
-            bufferSource.start();*/
+            bufferSource.start();
         }
     
         private createPreviewLink(filteredLumpIndex: number) {
