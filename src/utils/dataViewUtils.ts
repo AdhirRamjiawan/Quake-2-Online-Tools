@@ -20,8 +20,21 @@ module Quake2Tools {
             return result;
         }
 
+        public static Uint16ArrayToNumberArray(array:Uint16Array) : number[]{
+            let result : number[] = [];
+
+            for (var index = 0; index < array.length; index++)
+                result.push(array[index]);
+
+            return result;
+        }
+
         public static getBinaryData(dataView:DataView, seekIndex: number, offset: number) : Uint8Array {
             return new Uint8Array(dataView.buffer, seekIndex, offset);
+        }
+
+        public static getBinaryData16(dataView:DataView, seekIndex: number, offset: number) : Uint16Array {
+            return new Uint16Array(dataView.buffer, seekIndex, offset);
         }
 
         public static getInt32(

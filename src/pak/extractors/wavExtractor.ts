@@ -15,7 +15,7 @@ module Quake2Tools {
 
             result.header = this.extractWavRiffHeader();
             result.fmtSubChunk = this.extractWavFmtSubChuck();
-            result.dataSubChunk = this.extractorWavDataSubChunk();
+            result.dataSubChunk = this.extractorWavDataSubChunk(result.fmtSubChunk.bitsPerSample);
             return result;
         }
 
@@ -76,7 +76,7 @@ module Quake2Tools {
             return result;
         }
 
-        private extractorWavDataSubChunk(): WavDataSubChunk {
+        private extractorWavDataSubChunk(bitsPerSample: number): WavDataSubChunk {
             let result: WavDataSubChunk = new WavDataSubChunk();
 
             result.subChunk2Id = DataViewUtils.getString(this.dataView, this.seekIndex, 4);
@@ -85,7 +85,11 @@ module Quake2Tools {
             result.subChunk2Size = DataViewUtils.getInt32(this.dataView, this.seekIndex);
             this.seekIndex +=4;
 
-            result.data = DataViewUtils.getBinaryData(this.dataView, this.seekIndex, result.subChunk2Size);
+            if (bitsPerSample === 8) {
+                result.data = DataViewUtils.getBinaryData(this.dataView, this.seekIndex, result.subChunk2Size);
+            } else if (bitsPerSample === 16) {
+                result.data = DataViewUtils.getBinaryData16(this.dataView, this.seekIndex, result.subChunk2Size);
+            }
 
             Debugging.debug("Wav data sub chunk",
                 result.subChunk2Id,

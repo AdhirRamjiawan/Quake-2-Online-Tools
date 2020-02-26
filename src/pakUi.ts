@@ -207,20 +207,37 @@ module Quake2Tools {
             URL.revokeObjectURL(dataUri);
         }
     
+        // need to document this playing of sound well.
         private playSound(position: number, length: number) {            
             let wav:Wav = this.extractor.getWavSound(position, length);
             var context = new AudioContext();
 
-            var frameCount = wav.dataSubChunk.subChunk2Size / wav.fmtSubChunk.numChannels;
+            var frameCount = wav.dataSubChunk.subChunk2Size 
+                        / (wav.fmtSubChunk.numChannels
+                            * wav.fmtSubChunk.blockAlign);
+
+            var normalisedSampleRate =  0;
+            var maxAmplitude = 0;
+
+            if (wav.fmtSubChunk.bitsPerSample === 8) {
+                normalisedSampleRate = wav.fmtSubChunk.sampleRate;
+
+                // need the max amplitude to normal sound data between 0..1
+                maxAmplitude = Math.max(...DataViewUtils.Uint8ArrayToNumberArray(wav.dataSubChunk.data));
+            } else if (wav.fmtSubChunk.bitsPerSample === 16) {
+                normalisedSampleRate = wav.fmtSubChunk.sampleRate * wav.fmtSubChunk.blockAlign;
+
+                // 16 bit seems to have too much gain on it.
+                // need the max amplitude to normal sound data between 0..1
+                maxAmplitude = Math.max(...DataViewUtils.Uint16ArrayToNumberArray(wav.dataSubChunk.data));
+            }
 
             var buffer = context.createBuffer(
                 wav.fmtSubChunk.numChannels, 
                 frameCount, 
-                wav.fmtSubChunk.sampleRate);
+                normalisedSampleRate);
 
             var currentBufferedData = buffer.getChannelData(0);
-
-            var maxAmplitude = Math.max(...DataViewUtils.Uint8ArrayToNumberArray(wav.dataSubChunk.data));
 
             for (var i = 0; i < frameCount; i++) {
                 currentBufferedData[i] =  
