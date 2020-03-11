@@ -11,6 +11,13 @@ module Quake2Tools {
             return result;
         }
 
+        public static getString16(dataView: DataView, seekIndex:number, offset: number, littleEndian: boolean = true) : string {
+            let bufView:Int16Array = new Int16Array(dataView.buffer, seekIndex, offset);
+            let numberArray: number[] = this.Int16ArrayToNumberArray(bufView);
+            let result = String.fromCharCode.apply(null, numberArray);
+            return result;
+        }
+
         public static Uint8ArrayToNumberArray(array:Uint8Array) : number[]{
             let result : number[] = [];
 
@@ -20,11 +27,11 @@ module Quake2Tools {
             return result;
         }
 
-        public static Uint16ArrayToNumberArray(array:Uint16Array) : number[]{
+        public static Int16ArrayToNumberArray(array:Int16Array) : number[]{
             let result : number[] = [];
 
             for (var index = 0; index < array.length; index++)
-                result.push(array[index]);
+                result.push(Math.abs(array[index]));
 
             return result;
         }
@@ -33,8 +40,8 @@ module Quake2Tools {
             return new Uint8Array(dataView.buffer, seekIndex, offset);
         }
 
-        public static getBinaryData16(dataView:DataView, seekIndex: number, offset: number) : Uint16Array {
-            return new Uint16Array(dataView.buffer, seekIndex, offset);
+        public static getBinaryData16(dataView:DataView, seekIndex: number, offset: number) : Int16Array {
+            return new Int16Array(dataView.buffer, seekIndex, offset);
         }
 
         public static getInt32(

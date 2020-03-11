@@ -79,15 +79,21 @@ module Quake2Tools {
         private extractorWavDataSubChunk(bitsPerSample: number): WavDataSubChunk {
             let result: WavDataSubChunk = new WavDataSubChunk();
 
-            result.subChunk2Id = DataViewUtils.getString(this.dataView, this.seekIndex, 4);
-            this.seekIndex +=4;
-
-            result.subChunk2Size = DataViewUtils.getInt32(this.dataView, this.seekIndex);
-            this.seekIndex +=4;
-
             if (bitsPerSample === 8) {
+                result.subChunk2Id = DataViewUtils.getString(this.dataView, this.seekIndex, 4);
+                this.seekIndex +=4;
+
+                result.subChunk2Size = DataViewUtils.getInt32(this.dataView, this.seekIndex);
+                this.seekIndex +=4;
+
                 result.data = DataViewUtils.getBinaryData(this.dataView, this.seekIndex, result.subChunk2Size);
             } else if (bitsPerSample === 16) {
+                result.subChunk2Id = DataViewUtils.getString(this.dataView, this.seekIndex, 4);
+                this.seekIndex +=4;
+
+                result.subChunk2Size = DataViewUtils.getInt32(this.dataView, this.seekIndex);
+                this.seekIndex +=4;
+                
                 result.data = DataViewUtils.getBinaryData16(this.dataView, this.seekIndex, result.subChunk2Size);
             }
 

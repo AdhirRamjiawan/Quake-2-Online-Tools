@@ -216,26 +216,22 @@ module Quake2Tools {
                         / (wav.fmtSubChunk.numChannels
                             * wav.fmtSubChunk.blockAlign);
 
-            var normalisedSampleRate =  0;
             var maxAmplitude = 0;
 
+            // need the max amplitude to normal sound data between 0..1
             if (wav.fmtSubChunk.bitsPerSample === 8) {
-                normalisedSampleRate = wav.fmtSubChunk.sampleRate;
-
-                // need the max amplitude to normal sound data between 0..1
                 maxAmplitude = Math.max(...DataViewUtils.Uint8ArrayToNumberArray(wav.dataSubChunk.data));
             } else if (wav.fmtSubChunk.bitsPerSample === 16) {
-                normalisedSampleRate = wav.fmtSubChunk.sampleRate * wav.fmtSubChunk.blockAlign;
-
-                // 16 bit seems to have too much gain on it.
                 // need the max amplitude to normal sound data between 0..1
-                maxAmplitude = Math.max(...DataViewUtils.Uint16ArrayToNumberArray(wav.dataSubChunk.data));
+                maxAmplitude = Math.max(...DataViewUtils.Int16ArrayToNumberArray(wav.dataSubChunk.data));
             }
+            Debugging.debug("wav.fmtSubChunk.bitsPerSample", wav.fmtSubChunk.bitsPerSample);
+            Debugging.debug("maxAmplitude", maxAmplitude);
 
             var buffer = context.createBuffer(
                 wav.fmtSubChunk.numChannels, 
                 frameCount, 
-                normalisedSampleRate);
+                wav.fmtSubChunk.sampleRate);
 
             var currentBufferedData = buffer.getChannelData(0);
 
@@ -243,8 +239,6 @@ module Quake2Tools {
                 currentBufferedData[i] =  
                     (wav.dataSubChunk.data[i] / maxAmplitude);
             }
-
-            console.log(currentBufferedData);
 
             var bufferSource = context.createBufferSource();
             bufferSource.buffer = buffer;
