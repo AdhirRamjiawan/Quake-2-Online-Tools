@@ -24,10 +24,22 @@ module Quake2Tools {
             this.globalArchive = {};
             this.filteredLumps = new Array<IUiLump>();
             this.summaryStats = new Array<IUiSummaryStats>();
+
+            setTimeout(this.hideSplashScreen, 3000);
         }
 
         public setPakFile(event: Event) {
             this.extractor.setPakFile(event);
+        }
+
+        private hideSplashScreen() {
+            Debugging.debug("Hiding splash screen...");
+            var splashScreen: HTMLElement = <HTMLElement>document.getElementById("splash-screen");
+            splashScreen.setAttribute("class", "splash-screen-hide");
+
+            setTimeout(()=>{
+                splashScreen.setAttribute("style", "display:none");
+            }, 1000);
         }
 
         private getFileExtension(lumpPath:String) : string {
@@ -284,6 +296,30 @@ module Quake2Tools {
             this.extractor.extractArchive(
                 (data: any)=>{this.displayArchive(data);}
             );
+        }
+
+        public showToolTab(tab: string, element:HTMLElement) {
+            this.resetAllMenuButtons();
+            this.hideAllTabs();
+            var tabPak: HTMLElement = <HTMLElement>document.getElementById("tool-tab-" + tab);
+            tabPak.setAttribute("style", "display: block");
+            element.setAttribute("class", "selected");
+        }
+
+        private hideAllTabs() {
+            var elements = document.getElementsByClassName("tool-tab");
+
+            for (var i = 0; i < elements.length; i++) {
+                elements.item(i).setAttribute("style", "display:none;");
+            }
+        }
+
+        private resetAllMenuButtons() {
+            var elements = document.getElementsByClassName("menu-button");
+
+            for (var i = 0; i < elements.length; i++) {
+                elements.item(i).setAttribute("class", "");
+            }
         }
      }
 }
