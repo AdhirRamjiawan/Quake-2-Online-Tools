@@ -32,6 +32,17 @@ module Quake2Tools {
             this.extractor.setPakFile(event);
         }
 
+        private setLogo(isLoading: boolean) {
+            Debugging.debug("setting logo: " + isLoading);
+            var logo: HTMLImageElement = <HTMLImageElement>document.getElementById("logo");
+
+            if (isLoading) {
+                logo.src = "img/loading.gif";
+            } else {
+                logo.src = "img/logo-gray.png";
+            }
+        }
+
         private hideSplashScreen() {
             Debugging.debug("Hiding splash screen...");
             var splashScreen: HTMLElement = <HTMLElement>document.getElementById("splash-screen");
@@ -92,6 +103,7 @@ module Quake2Tools {
         }
     
         public search() {
+            this.setLogo(true);
             let  searchTerm = <HTMLInputElement>document.getElementById("searchTerm");
             this.filteredLumps = [];
     
@@ -108,6 +120,7 @@ module Quake2Tools {
     
             this.loadArchivePage(0);
             this.displayPaginationButtons();
+            this.setLogo(false);
         }
     
         private displayPaginationButtons() {
@@ -193,6 +206,7 @@ module Quake2Tools {
         }
     
         public previewFile(e: Event, filteredLumpIndex: number) {
+            this.setLogo(true);
             e.preventDefault();
             let previewPane = <HTMLElement>document.getElementById("previewPane");
             var htmlContent = "";
@@ -208,6 +222,7 @@ module Quake2Tools {
             }
     
             previewPane.innerHTML = htmlContent;
+            this.setLogo(false);
         }
 
         public downloadFile(e: Event, filteredLumpIndex: number) {
@@ -290,11 +305,15 @@ module Quake2Tools {
         }
 
         public extractArchive() {
+            this.setLogo(true);
             /* We need to wrap this call back to extractArchive
              * into a arrow function to preserve the context of
              * `this`. */
             this.extractor.extractArchive(
-                (data: any)=>{this.displayArchive(data);}
+                (data: any)=>{
+                    this.displayArchive(data);
+                    this.setLogo(false);
+                }
             );
         }
 

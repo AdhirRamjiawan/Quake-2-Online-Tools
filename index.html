@@ -1,122 +1,134 @@
-
-<link href="styles.css" rel="stylesheet" type="text/css"/>
-<script src="dist/q2tools.js">
-    
-</script>
-<script>
-    var pakUi = new Quake2Tools.PakUi();
-</script>
-
-<div class="header">
-    <div class="header-left">
-        <div class="tool-tab-group">
-            <button class="menu-button" onclick="pakUi.showToolTab('pak', this)">Pak Extractor</button>
-            <button class="menu-button" onclick="pakUi.showToolTab('2', this)">Tool 2</button>
-            <button class="menu-button" onclick="pakUi.showToolTab('3', this)">Tool 3</button>
-            <button class="menu-button" onclick="pakUi.showToolTab('4', this)">Tool 4</button>
-        </div>
-    </div>
-
-    <div class="header-right">
-        <span class="logo">QUAKE 2 TOOLS</span>
-    </div>
-</div>
-
-<div id="splash-screen" class="splash-screen-show">
-    
-        <h1>Quake 2 Tools</h1>
-        <h3>Version 1.0.0</h3>
-        <p>
-            Sourcecode: <a href="https://github.com/AdhirRamjiawan/Quake-2-Online-Tools">Github</a><br/>
-            Created by: Adhir Ramjiawan (Year: 2020)<br/>
-            Email: <a href="mailto:adhirramjiawan0@gmail.com">adhirramjiawan0@gmail.com</a><br/>
-        </p>
-
-</div>
-
-
-<div class="tool-tab" id="tool-tab-pak">
-    <br/>
-    <h2>Pak extractor</h2>
-
-    <fieldset>
-        <legend>
-            <h3>Browse Pak</h3>
-        </legend>
-        <input type="file" id="fileModel" onchange="pakUi.setPakFile(event)" />
-        <button id="btnView" onclick="pakUi.extractArchive()">View Archive</button>
-    </fieldset>
-
-    <fieldset class="lump-fieldset">
-        <legend>
-            <h3>Lumps</h3>
-        </legend>
-
-        <label>Search: </label><input type="text" id="searchTerm"/><button onclick="pakUi.search()">Search in Archive</button><br/>
-        <br/>
-        <hr/>
-
-        <div class="summary-stats">
-            <table>
-                <caption>Summary Stats</caption>
-                <thead>
-                    <th>Extension</th>
-                    <th>Count</th>
-                </thead>
-                <tbody id="summaryStatsTableBody">
-                    
-                </tbody>
-            </table>
-        </div>
-
-        <div class="lump-results">
-            <label>Page </label><input type="text" readonly id="pageNumber"/><br/>
-            Page Size<select id="pageSize" onchange="pakUi.updatePageSize()">
-                <option value="30" selected>30</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-                <option value="200">200</option>
-                <option value="500">500</option>
-            </select>
-            <table>
-                <caption>Lump files</caption>
-                <thead>
-                    <th>Preview</th>
-                    <th>Download</th>
-                    <th>Path</th>
-                    <th>Size (KB)</th>
-                </thead>
-                <tbody id="lumpTableBody">
-                    
-                </tbody>
-            </table>
-            <div id="paginationButtonList">
-                
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+        <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+        
+        <link href="styles.css" rel="stylesheet" type="text/css"/>
+        <script src="dist/q2tools.js">
+            
+        </script>
+        <script>
+            var pakUi = new Quake2Tools.PakUi();
+        </script>
+    </head>
+    <body>
+        <div class="header">
+            <div class="header-left">
+                <div class="tool-tab-group">
+                    <button class="menu-button" onclick="pakUi.showToolTab('pak', this)">Pak Extractor</button>
+                    <button class="menu-button" onclick="pakUi.showToolTab('2', this)">Tool 2</button>
+                    <button class="menu-button" onclick="pakUi.showToolTab('3', this)">Tool 3</button>
+                    <button class="menu-button" onclick="pakUi.showToolTab('4', this)">Tool 4</button>
+                </div>
+            </div>
+        
+            <div class="header-right">
+                <img id="logo" src="img/logo-gray.png" style="height:30px;"/>
+                <span class="logo">QUAKE 2 TOOLS</span>
             </div>
         </div>
-    </fieldset>
-    
-    <fieldset class="preview-pane-fieldset">
-        <legend>
-            <h3>Preview pane</h3>
-        </legend>
-    
-        <div>
-            <div id="previewPane">
-            </div>
+        
+        <div id="splash-screen" class="splash-screen-show">
+            
+                <img src="img/loading.gif"/>
+                <h1>Quake 2 Tools</h1>
+                <h3>Version 1.0.0</h3>
+                <p>
+                    Sourcecode: <a href="https://github.com/AdhirRamjiawan/Quake-2-Online-Tools">Github</a><br/>
+                    Created by: Adhir Ramjiawan (Year: 2020)<br/>
+                    Email: <a href="mailto:adhirramjiawan0@gmail.com">adhirramjiawan0@gmail.com</a><br/>
+                </p>
+        
         </div>
-    </fieldset>
-    
-</div>
-<div class="tool-tab" id="tool-tab-2">
-    <br/>
-    <h2>Tool 2</h2>
-</div>
-<div class="tool-tab" id="tool-tab-3">
-    <br/>
-    <h2>Tool 3</h2>
-</div>
-<div class="tool-tab" id="tool-tab-4">
-    <br/>
-    <h2>Tool 4</h2>
-</div>
+        
+        
+        <div class="tool-tab" id="tool-tab-pak">
+            <br/>
+            <h2>Pak extractor</h2>
+        
+            <fieldset>
+                <legend>
+                    <h3>Browse Pak</h3>
+                </legend>
+                <input type="file" id="fileModel" onchange="pakUi.setPakFile(event)" />
+                <button id="btnView" onclick="pakUi.extractArchive()">View Archive</button>
+            </fieldset>
+        
+            <fieldset class="lump-fieldset">
+                <legend>
+                    <h3>Lumps</h3>
+                </legend>
+        
+                <label>Search: </label><input type="text" id="searchTerm"/><button onclick="pakUi.search()">Search in Archive</button><br/>
+                <br/>
+                <hr/>
+        
+                <div class="summary-stats">
+                    <table>
+                        <caption>Summary Stats</caption>
+                        <thead>
+                            <th>Extension</th>
+                            <th>Count</th>
+                        </thead>
+                        <tbody id="summaryStatsTableBody">
+                            
+                        </tbody>
+                    </table>
+                </div>
+        
+                <div class="lump-results">
+                    <label>Page </label><input type="text" readonly id="pageNumber"/><br/>
+                    Page Size<select id="pageSize" onchange="pakUi.updatePageSize()">
+                        <option value="30" selected>30</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option>
+                        <option value="500">500</option>
+                    </select>
+                    <table>
+                        <caption>Lump files</caption>
+                        <thead>
+                            <th>Preview</th>
+                            <th>Download</th>
+                            <th>Path</th>
+                            <th>Size (KB)</th>
+                        </thead>
+                        <tbody id="lumpTableBody">
+                            
+                        </tbody>
+                    </table>
+                    <div id="paginationButtonList">
+                        
+                    </div>
+                </div>
+            </fieldset>
+            
+            <fieldset class="preview-pane-fieldset">
+                <legend>
+                    <h3>Preview pane</h3>
+                </legend>
+            
+                <div>
+                    <div id="previewPane">
+                    </div>
+                </div>
+            </fieldset>
+            
+        </div>
+        <div class="tool-tab" id="tool-tab-2">
+            <br/>
+            <h2>Tool 2</h2>
+        </div>
+        <div class="tool-tab" id="tool-tab-3">
+            <br/>
+            <h2>Tool 3</h2>
+        </div>
+        <div class="tool-tab" id="tool-tab-4">
+            <br/>
+            <h2>Tool 4</h2>
+        </div>
+    </body>
+</html>
+
+
