@@ -202,7 +202,7 @@ module Quake2Tools {
             summaryStatsTable.innerHTML = tableDataMarkup;
             this.summaryStats = distinctList;
         }
-    
+
         private loadArchivePage(pageNumber: number) {
             let pageNumberTextBox = <HTMLInputElement>document.getElementById("pageNumber");
             let lumpTable = <HTMLElement>document.getElementById("lumpTableBody");
@@ -215,8 +215,7 @@ module Quake2Tools {
             for (var i = startIndex; i < endIndex; i++) {
                 if (this.filteredLumps[i]) {
                     tableDataMarkup += this.createTableRow(
-                            this.createPreviewLink(i),
-                            this.createDownloadLink(i),
+                            this.createLumpActionSelect(i),
                             this.filteredLumps[i].name, 
                             (this.filteredLumps[i].length / 1024).toFixed(2)
                         );
@@ -231,9 +230,8 @@ module Quake2Tools {
             this.displayPaginationButtons();
         }
     
-        public previewFile(e: Event, filteredLumpIndex: number) {
+        public previewFile(filteredLumpIndex: number) {
             this.setLogo(true);
-            e.preventDefault();
             let previewPane = <HTMLElement>document.getElementById("previewPane");
             var htmlContent = "";
             let lump = this.filteredLumps[filteredLumpIndex];
@@ -251,8 +249,7 @@ module Quake2Tools {
             this.setLogo(false);
         }
 
-        public downloadFile(e: Event, filteredLumpIndex: number) {
-            e.preventDefault();
+        public downloadFile(filteredLumpIndex: number) {
             let lump = this.filteredLumps[filteredLumpIndex];
             let lumpData = this.extractor.extractSpecificLumpAsBinary(lump.position, lump.length);
             let dataUri: string = URL.createObjectURL(new Blob([lumpData], { type: 'application/text'}));
@@ -260,6 +257,16 @@ module Quake2Tools {
             URL.revokeObjectURL(dataUri);
         }
     
+        public onChangeLumpAction(filteredLumpIndex: number, action:string ) {
+            if (action === 'download') {
+                this.downloadFile(filteredLumpIndex);
+            } else if (action === 'preview') {
+                this.previewFile(filteredLumpIndex);
+            } else if (action === 'delete') {
+                alert('Not implemented!');
+            }
+        }
+
         // need to document this playing of sound well.
         private playSound(position: number, length: number) {            
             let wav:Wav = this.extractor.getWavSound(position, length);
@@ -298,22 +305,20 @@ module Quake2Tools {
             bufferSource.connect(context.destination);
             bufferSource.start();
         }
-    
-        private createPreviewLink(filteredLumpIndex: number) {
-            /* Referncing pakUi in this anchor tag isn't good.
-             * We need to actually remove as much of JS from 
-             * the markup and inject markup/variables from 
-             * this class. Or make use of the window object */
 
-            return  '<a href="#" onclick="pakUi.previewFile(event, {0})" >Preview</a>'
-                    .replace("{0}", filteredLumpIndex.toString());
+        private createLumpActionSelect(filteredLumpIndex: number) {
+            var select = '<select onchange="pakUi.onChangeLumpAction('+filteredLumpIndex+', this.value)">';
+
+            select += '<option value="">-- Select Action --</option>';
+            select += '<option value="preview">Preview</option>';
+            select += '<option value="download">Download</option>';
+            select += '<option value="delete">Delete</option>';
+
+            select += '</select>';
+
+            return select;
         }
 
-        private createDownloadLink(filteredLumpIndex: number) {
-            return  '<a href="#" onclick="pakUi.downloadFile(event, {0})" >Download</a>'
-                    .replace("{0}", filteredLumpIndex.toString());
-        }
-    
         private createTableRow(...args:any[]) {
             var markup = "";
             for (var a=0; a < args.length; a++) {
