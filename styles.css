@@ -48,7 +48,7 @@ table {
 }
 
 table td, th {
-    border: 2px dashed rgb(40, 170, 40);
+    border: 2px solid rgb(43, 38, 38);
     padding: 0.5rem;
 }
 

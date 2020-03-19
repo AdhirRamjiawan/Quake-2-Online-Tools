@@ -19,7 +19,8 @@ module Quake2Tools {
         private globalArchive: any;
         private filteredLumps: Array<IUiLump>;
         private summaryStats: Array<IUiSummaryStats>;
-    
+        private lumpTablePaginationStartIndex: number = 0;
+
         constructor() {
             this.globalArchive = {};
             this.filteredLumps = new Array<IUiLump>();
@@ -122,6 +123,16 @@ module Quake2Tools {
             this.displayPaginationButtons();
             this.setLogo(false);
         }
+
+        public progressLumpTablePaginationStartIndex() {
+            this.lumpTablePaginationStartIndex++;
+            this.loadArchivePage(this.lumpTablePaginationStartIndex);
+        }
+
+        public regressLumpTablePaginationStartIndex() {
+            this.lumpTablePaginationStartIndex--;
+            this.loadArchivePage(this.lumpTablePaginationStartIndex);
+        }
     
         private displayPaginationButtons() {
             let paginationButtonList = <HTMLElement>document.getElementById("paginationButtonList");
@@ -129,9 +140,22 @@ module Quake2Tools {
             
             var numberOfButtons = this.filteredLumps.length / this.paginationSize;
     
-            for (var i =0 ; i< numberOfButtons; i++) {
+            paginationButtonListMarkup += '<button onclick="pakUi.regressLumpTablePaginationStartIndex()">&lt;&lt;</button>';
+
+            for (var i = this.lumpTablePaginationStartIndex ; i < this.lumpTablePaginationStartIndex + 3; i++) {
                 paginationButtonListMarkup += this.createPaginationButton(i);
             }
+
+            for (var i = 0; i < 3; i++) {
+                paginationButtonListMarkup += "<span> . </span>";
+            }
+
+            for (var i = numberOfButtons - 3 ; i <  numberOfButtons; i++) {
+                paginationButtonListMarkup += this.createPaginationButton(Math.floor(i));
+            }
+
+            paginationButtonListMarkup += '<button onclick="pakUi.progressLumpTablePaginationStartIndex()">&gt;&gt;</button>';
+
             paginationButtonList.innerHTML = paginationButtonListMarkup;
         }
     
@@ -203,6 +227,8 @@ module Quake2Tools {
     
             lumpTable.innerHTML = tableDataMarkup;
             pageNumberTextBox.setAttribute("value", (pageNumber + 1).toString());
+
+            this.displayPaginationButtons();
         }
     
         public previewFile(e: Event, filteredLumpIndex: number) {
@@ -329,7 +355,8 @@ module Quake2Tools {
             var elements = document.getElementsByClassName("tool-tab");
 
             for (var i = 0; i < elements.length; i++) {
-                elements.item(i).setAttribute("style", "display:none;");
+                var item = <Element>elements.item(i);
+                item.setAttribute("style", "display:none;");
             }
         }
 
@@ -337,7 +364,8 @@ module Quake2Tools {
             var elements = document.getElementsByClassName("menu-button");
 
             for (var i = 0; i < elements.length; i++) {
-                elements.item(i).setAttribute("class", "");
+                var item = <Element>elements.item(i);
+                item.setAttribute("class", "");
             }
         }
      }
