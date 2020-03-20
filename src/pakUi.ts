@@ -257,7 +257,9 @@ module Quake2Tools {
             URL.revokeObjectURL(dataUri);
         }
     
-        public onChangeLumpAction(filteredLumpIndex: number, action:string ) {
+        public onChangeLumpAction(filteredLumpIndex: number, select:HTMLSelectElement) {
+            var action:string = select.value;
+
             if (action === 'download') {
                 this.downloadFile(filteredLumpIndex);
             } else if (action === 'preview') {
@@ -265,6 +267,8 @@ module Quake2Tools {
             } else if (action === 'delete') {
                 alert('Not implemented!');
             }
+
+            select.selectedIndex = 0;
         }
 
         // need to document this playing of sound well.
@@ -307,7 +311,7 @@ module Quake2Tools {
         }
 
         private createLumpActionSelect(filteredLumpIndex: number) {
-            var select = '<select onchange="pakUi.onChangeLumpAction('+filteredLumpIndex+', this.value)">';
+            var select = '<select onchange="pakUi.onChangeLumpAction('+filteredLumpIndex+', this)">';
 
             select += '<option value="">-- Select Action --</option>';
             select += '<option value="preview">Preview</option>';
