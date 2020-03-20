@@ -173,3 +173,12 @@ a:active {
     text-align: center;
     min-height: 100vh;
 }
+
+.pagination-button-list {
+    margin: auto;
+    width: fit-content;
+}
+
+#paginationButtonList {
+    margin-top: 15px;
+}

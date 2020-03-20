@@ -136,6 +136,7 @@ module Quake2Tools {
     
         private displayPaginationButtons() {
             let paginationButtonList = <HTMLElement>document.getElementById("paginationButtonList");
+            let paginationButtonList2 = <HTMLElement>document.getElementById("paginationButtonList2");
             var paginationButtonListMarkup = "";
             
             var numberOfButtons = this.filteredLumps.length / this.paginationSize;
@@ -157,6 +158,7 @@ module Quake2Tools {
             paginationButtonListMarkup += '<button onclick="pakUi.progressLumpTablePaginationStartIndex()">&gt;&gt;</button>';
 
             paginationButtonList.innerHTML = paginationButtonListMarkup;
+            paginationButtonList2.innerHTML = paginationButtonListMarkup;
         }
     
         private getDistinct(list: Array<IUiSummaryStats>): Array<IUiSummaryStats>{
