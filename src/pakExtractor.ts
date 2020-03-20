@@ -20,6 +20,7 @@ module Quake2Tools {
 
         public archive: PakArchive;
         public wavExtractor: WavExtractor = new WavExtractor();
+        public walExtractor: WalExtractor = new WalExtractor();
 
         // 2. get file stream of pak archive
         constructor(private isDebug: boolean) {
@@ -126,6 +127,14 @@ module Quake2Tools {
             wavExtractor.position = position;
             wavExtractor.length = length;
             return wavExtractor.extract();
+        }
+
+        public getWalTexture(position:number, length:number) : Wal {
+            let walExtractor = new WalExtractor();
+            walExtractor.dataView = this.dataView;
+            walExtractor.position = position;
+            walExtractor.length = length;
+            return walExtractor.extract();
         }
 
 
