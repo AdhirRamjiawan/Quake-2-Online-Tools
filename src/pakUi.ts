@@ -341,6 +341,18 @@ module Quake2Tools {
             return '<button onclick="pakUi.loadArchivePage('+pageNumber+')">'+(pageNumber + 1)+'</button>';
         }
 
+        public saveAndDownladArchive() {
+            this.setLogo(true);
+            /* We need to wrap this call back to extractArchive
+             * into a arrow function to preserve the context of
+             * `this`. */
+            this.extractor.saveAndDownladArchive(
+                (data: any)=>{
+                    this.setLogo(false);
+                }
+            );
+        }
+
         public extractArchive() {
             this.setLogo(true);
             /* We need to wrap this call back to extractArchive

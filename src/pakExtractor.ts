@@ -95,6 +95,10 @@ module Quake2Tools {
             };
         }
 
+        public saveAndDownladArchive(callback: Function) {
+            alert('Not implemented');
+        }
+
         public extractArchive(callback: Function) {
             this.resetState();
             this.readPakFile(callback);
