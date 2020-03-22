@@ -50,6 +50,12 @@ module Quake2Tools {
             return dataView.getInt32(seekIndex, littleEndian);
         }
 
+        public static getUint32(
+            dataView: DataView, seekIndex:number, 
+            littleEndian: boolean = true) :number {
+            return dataView.getUint32(seekIndex, littleEndian);
+        }
+
         public static getInt16(
             dataView: DataView, seekIndex:number, 
             littleEndian: boolean = true) :number {

@@ -4,14 +4,14 @@ module Quake2Tools {
         public name: string = '';
         public width: number = 0;
         public height: number = 0;
-        public offset: number = 0;
+        public offset: Array<number>;
         public nextName: string = '';
         public flags: number = 0;
         public contents: number = 0;
         public value: number = 0;
 
         constructor() {
-            
+            this.offset = [];
         }
     }
 

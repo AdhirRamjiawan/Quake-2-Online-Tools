@@ -15,29 +15,34 @@ module Quake2Tools {
 
             result.header = this.extractWalHeader();
             result.data = DataViewUtils.getBinaryData(this.dataView, 
-                this.seekIndex, result.header.width * result.header.height);
+                this.position + result.header.offset[0], result.header.width * result.header.height);
+
+            Debugging.debug("Wal data", result.data);
+            
             return result;
         }
 
         private extractWalHeader() : WalHeader {
             let result: WalHeader = new WalHeader();
 
-            result.name = DataViewUtils.getString(this.dataView, this.seekIndex, 4);
+            result.name = DataViewUtils.getString(this.dataView, this.seekIndex, 32);
+            this.seekIndex +=32;
+
+            result.width = DataViewUtils.getUint32(this.dataView, this.seekIndex);
             this.seekIndex +=4;
 
-            result.width = DataViewUtils.getInt32(this.dataView, this.seekIndex);
+            result.height = DataViewUtils.getUint32(this.dataView, this.seekIndex);
             this.seekIndex +=4;
 
-            result.height = DataViewUtils.getInt32(this.dataView, this.seekIndex);
-            this.seekIndex +=4;
+            for (var i = 0; i < 4; i++) {
+                result.offset[i] = DataViewUtils.getUint32(this.dataView, this.seekIndex);
+                this.seekIndex +=4;
+            }
 
-            result.offset = DataViewUtils.getInt32(this.dataView, this.seekIndex);
-            this.seekIndex +=4;
+            result.nextName = DataViewUtils.getString(this.dataView, this.seekIndex, 32);
+            this.seekIndex += 32;
 
-            result.nextName = DataViewUtils.getString(this.dataView, this.seekIndex, 4);
-            this.seekIndex += 4;
-
-            Debugging.debug("Wal Header: ", result.name, result.width, result.height, result.offset, result.nextName);
+            Debugging.debug("Wal Header: ", result);
 
             return result;
         }

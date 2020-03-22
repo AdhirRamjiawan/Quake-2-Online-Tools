@@ -235,19 +235,19 @@ module Quake2Tools {
         public previewFile(filteredLumpIndex: number) {
             this.setLogo(true);
             let previewPane = <HTMLElement>document.getElementById("previewPane");
-            var htmlContent = "";
             let lump = this.filteredLumps[filteredLumpIndex];
     
             if (lump.fileExtension === "cfg") {
                 var data = this.extractor.extractSpecificLumpAsString(lump.position, lump.length);
-                htmlContent += '<textarea readonly>{0}</textarea>'
+                previewPane.innerHTML =  '<textarea readonly>{0}</textarea>'
                     .replace("{0}", data);
             } else if (lump.fileExtension === "wav") {
                 //let data = this.extractor.extractSpecificLumpAsBinary(lump.position, lump.length);
                 this.playSound(lump.position, lump.length);
+            } else if (lump.fileExtension === "wal") {
+                this.drawWalTexture(lump.position, lump.length);
             }
-    
-            previewPane.innerHTML = htmlContent;
+
             this.setLogo(false);
         }
 
@@ -271,6 +271,34 @@ module Quake2Tools {
             }
 
             select.selectedIndex = 0;
+        }
+
+        private drawWalTexture(position: number, length: number) {
+            let wal:Wal = this.extractor.getWalTexture(position, length);
+            let previewPane = <HTMLElement>document.getElementById("previewPane");
+            let walCanvas = <HTMLCanvasElement>document.createElement("canvas");
+            var context =  <CanvasRenderingContext2D>walCanvas.getContext("2d");
+            var imageData = <ImageData>context.createImageData(wal.header.width, wal.header.height);
+            var rawData = <Uint8ClampedArray>imageData.data;
+            var clampedWalData = Uint8ClampedArray.from(wal.data);
+
+            var walSize = wal.header.width * wal.header.height * 3;
+
+            Debugging.debug("Clamped wal data", clampedWalData);
+
+            for (var i =0; i < walSize; i+=4) {
+                rawData[i] = clampedWalData[i];
+                rawData[i + 1] = clampedWalData[i + 1];
+                rawData[i + 2] = clampedWalData[i + 2];
+                rawData[i + 3] = 255; // zero alpha
+            }
+
+            walCanvas.width = wal.header.width;
+            walCanvas.height = wal.header.height;
+            context.putImageData(imageData, 0, 0);
+
+            previewPane.innerHTML = "";
+            previewPane.appendChild(walCanvas);
         }
 
         // need to document this playing of sound well.

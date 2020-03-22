@@ -136,9 +136,7 @@ module Quake2Tools {
             walExtractor.length = length;
             return walExtractor.extract();
         }
-
-
-
+        
         // make use of DataViewUtils.ts
         private getStringAndMove(dataView: DataView, offset: number) : string {
             let bufView:Uint8Array = new Uint8Array(dataView.buffer, this.seekIndex, offset);
