@@ -246,6 +246,8 @@ module Quake2Tools {
                 this.playSound(lump.position, lump.length);
             } else if (lump.fileExtension === "wal") {
                 this.drawWalTexture(lump.position, lump.length);
+            } else if (lump.fileExtension === "pcx") {
+                this.drawPcxImage(lump.position, lump.length);
             }
 
             this.setLogo(false);
@@ -271,6 +273,33 @@ module Quake2Tools {
             }
 
             select.selectedIndex = 0;
+        }
+
+        private drawPcxImage(position: number, length: number) {
+            let pcx:Pcx = this.extractor.getPcxImage(position, length);
+            let previewPane = <HTMLElement>document.getElementById("previewPane");
+            let pcxCanvas = <HTMLCanvasElement>document.createElement("canvas");
+            var context =  <CanvasRenderingContext2D>pcxCanvas.getContext("2d");
+            var imageData = <ImageData>context.createImageData(pcx.header.horizontalResolution, pcx.header.verticalResolution);
+            var rawData = <Uint8ClampedArray>imageData.data;
+            var clampedWalData = Uint8ClampedArray.from(pcx.data);
+
+            var pcxSize = pcx.header.horizontalResolution * pcx.header.verticalResolution * pcx.header.numberOfColourPlanes;
+
+            Debugging.debug("Clamped wal data", clampedWalData);
+ 
+            for (var i =0; i < pcxSize; i++) {
+                for (var c = 0; c < pcx.header.numberOfColourPlanes; c++) {
+                    rawData[i + c] = clampedWalData[(pcx.header.horizontalResolution * c) + i];
+                }
+            }
+
+            pcxCanvas.width = pcx.header.horizontalResolution;
+            pcxCanvas.height = pcx.header.verticalResolution;
+            context.putImageData(imageData, 0, 0);
+
+            previewPane.innerHTML = "";
+            previewPane.appendChild(pcxCanvas);
         }
 
         private drawWalTexture(position: number, length: number) {

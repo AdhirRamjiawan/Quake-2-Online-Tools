@@ -136,6 +136,14 @@ module Quake2Tools {
             walExtractor.length = length;
             return walExtractor.extract();
         }
+
+        public getPcxImage(position:number, length:number) : Pcx {
+            let pcxExtractor = new PcxExtractor();
+            pcxExtractor.dataView = this.dataView;
+            pcxExtractor.position = position;
+            pcxExtractor.length = length;
+            return pcxExtractor.extract();
+        }
         
         // make use of DataViewUtils.ts
         private getStringAndMove(dataView: DataView, offset: number) : string {
