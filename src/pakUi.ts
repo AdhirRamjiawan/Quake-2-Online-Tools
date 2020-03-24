@@ -275,6 +275,31 @@ module Quake2Tools {
             select.selectedIndex = 0;
         }
 
+
+        private drawPcxImagePalette(data:Uint8Array) {
+            let previewPane = <HTMLElement>document.getElementById("previewPane");
+            let paletteCanvas = <HTMLCanvasElement>document.createElement("canvas");
+            var context =  <CanvasRenderingContext2D>paletteCanvas.getContext("2d");
+            var imageData = <ImageData>context.createImageData(200, 200);
+            var rawData = <Uint8ClampedArray>imageData.data;
+
+            var dataLength = data.length * 4;
+
+            for (var i =0; i < dataLength; i+=4) {
+                rawData[i] = data[i + 1];
+                rawData[i + 1] = data[i + 2];
+                rawData[i + 2] = data[i + 3];
+                rawData[i + 3] = 255;
+            }
+
+            paletteCanvas.width = 200;
+            paletteCanvas.height = 200;
+            paletteCanvas.setAttribute("style", "border: 1px solid #000");
+            context.putImageData(imageData, 0, 0);
+
+            previewPane.appendChild(paletteCanvas);
+        }
+
         private drawPcxImage(position: number, length: number) {
             let pcx:Pcx = this.extractor.getPcxImage(position, length);
             let previewPane = <HTMLElement>document.getElementById("previewPane");
@@ -282,23 +307,30 @@ module Quake2Tools {
             var context =  <CanvasRenderingContext2D>pcxCanvas.getContext("2d");
             var imageData = <ImageData>context.createImageData(pcx.header.horizontalResolution, pcx.header.verticalResolution);
             var rawData = <Uint8ClampedArray>imageData.data;
-            var clampedWalData = Uint8ClampedArray.from(pcx.data);
 
-            var pcxSize = pcx.header.horizontalResolution * pcx.header.verticalResolution * pcx.header.numberOfColourPlanes;
+            previewPane.innerHTML = "";
 
-            Debugging.debug("Clamped wal data", clampedWalData);
- 
-            for (var i =0; i < pcxSize; i++) {
-                for (var c = 0; c < pcx.header.numberOfColourPlanes; c++) {
-                    rawData[i + c] = clampedWalData[(pcx.header.horizontalResolution * c) + i];
-                }
+            var dataLength = pcx.data.length * 4;
+
+            for (var i =0; i < dataLength; i+=4) {
+                var paletteIndex = pcx.data[i];
+                rawData[i] = pcx.header.mainColorPallete[paletteIndex + 1];
+                rawData[i + 1] = pcx.header.mainColorPallete[paletteIndex + 2];
+                rawData[i + 2] = pcx.header.mainColorPallete[paletteIndex + 3];
+                rawData[i + 3] = 255;
             }
+
+
+            this.drawPcxImagePalette(pcx.header.mainColorPallete);
+
+            Debugging.debug("Raw data", rawData);
 
             pcxCanvas.width = pcx.header.horizontalResolution;
             pcxCanvas.height = pcx.header.verticalResolution;
+            pcxCanvas.setAttribute("style", "border: 1px solid #000");
             context.putImageData(imageData, 0, 0);
 
-            previewPane.innerHTML = "";
+            
             previewPane.appendChild(pcxCanvas);
         }
 
@@ -322,6 +354,7 @@ module Quake2Tools {
                 rawData[i + 3] = 255; // zero alpha
             }
 
+            walCanvas.setAttribute("style", "border: 1px solid #000");
             walCanvas.width = wal.header.width;
             walCanvas.height = wal.header.height;
             context.putImageData(imageData, 0, 0);

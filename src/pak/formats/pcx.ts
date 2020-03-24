@@ -15,7 +15,8 @@ module Quake2Tools {
         public numberOfColourPlanes:number = 0;
         public colorPlaneByteSize:number = 0;
         public colorPaletteMode:number = 0;
-
+        public mainColorPallete: Uint8Array = new Uint8Array(0);
+        
         constructor() {
         }
     }

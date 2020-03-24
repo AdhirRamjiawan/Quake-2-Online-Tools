@@ -15,15 +15,50 @@ module Quake2Tools {
 
             result.header = this.extractPcxHeader();
             
-            var sizeOfImageData = result.header.horizontalResolution 
-                * result.header.verticalResolution 
-                * result.header.numberOfColourPlanes;
-             
-            result.data = DataViewUtils.getBinaryData(this.dataView, this.position + 128, sizeOfImageData);
+            
+            if (result.header.version === 5 && result.header.numberOfColourPlanes === 1) {
+                result.header.mainColorPallete = 
+                    DataViewUtils.getBinaryData(this.dataView, this.length - 768, 768);
+
+                Debugging.debug("PCX color palette", this.length - 768, this.length, result.header.mainColorPallete);
+            }
+
+            if (result.header.encoding === 1) { // Run Length Encoding
+                result.data = this.extractRLEData(
+                    this.dataView, 
+                    this.position + 128, 
+                    this.length - 769);
+            } else {
+                result.data = DataViewUtils.getBinaryData(this.dataView, this.position + 128, this.length - 769);
+            }
+
+
 
             Debugging.debug("Pcx data", result.data);
             
             return result;
+        }
+
+        private extractRLEData(dataView: DataView, position:number, length:number) : Uint8Array {
+            var result: Array<number> = [];
+            var dataLength = (position + length) - 769;
+
+            for (var i = position; i < dataLength; i++) {
+                var metaByte = dataView.getUint8(i);
+
+                if (metaByte >= 192) {
+                    var colorByte = dataView.getUint8(i + 1);
+                    var rleDiff = metaByte & 0x3F;
+
+                    for (var rleIndex = 0; rleIndex < rleDiff; rleIndex++) {
+                        result.push(colorByte);
+                    }
+                } else {
+                    result.push(metaByte);
+                }
+            }
+
+            return Uint8Array.from(result);
         }
 
         private extractPcxHeader() : PcxHeader {
