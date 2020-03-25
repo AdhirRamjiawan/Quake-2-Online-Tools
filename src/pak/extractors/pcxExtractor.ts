@@ -17,22 +17,21 @@ module Quake2Tools {
             
             
             if (result.header.version === 5 && result.header.numberOfColourPlanes === 1) {
+                var paletteStart = (this.position + this.length) - 768;
                 result.header.mainColorPallete = 
-                    DataViewUtils.getBinaryData(this.dataView, this.length - 768, 768);
+                    DataViewUtils.getBinaryData(this.dataView, paletteStart, 768);
 
-                Debugging.debug("PCX color palette", this.length - 768, this.length, result.header.mainColorPallete);
+                Debugging.debug("PCX color palette", this.length - 768, result.header.mainColorPallete);
             }
 
             if (result.header.encoding === 1) { // Run Length Encoding
                 result.data = this.extractRLEData(
                     this.dataView, 
-                    this.position + 128, 
+                    this.position + 129, 
                     this.length - 769);
             } else {
                 result.data = DataViewUtils.getBinaryData(this.dataView, this.position + 128, this.length - 769);
             }
-
-
 
             Debugging.debug("Pcx data", result.data);
             
@@ -41,7 +40,7 @@ module Quake2Tools {
 
         private extractRLEData(dataView: DataView, position:number, length:number) : Uint8Array {
             var result: Array<number> = [];
-            var dataLength = (position + length) - 769;
+            var dataLength = position + length;
 
             for (var i = position; i < dataLength; i++) {
                 var metaByte = dataView.getUint8(i);

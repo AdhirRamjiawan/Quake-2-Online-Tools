@@ -14,7 +14,7 @@ module Quake2Tools {
 
      export class PakUi {
 
-        private extractor = new Quake2Tools.PakExtractor(false);
+        private extractor = new Quake2Tools.PakExtractor(true);
         private paginationSize = 30;
         private globalArchive: any;
         private filteredLumps: Array<IUiLump>;
@@ -310,9 +310,7 @@ module Quake2Tools {
 
             previewPane.innerHTML = "";
 
-            var dataLength = pcx.data.length * 4;
-
-            for (var i =0; i < dataLength; i+=4) {
+            for (var i =0; i < pcx.data.length; i+=4) {
                 var paletteIndex = pcx.data[i];
                 rawData[i] = pcx.header.mainColorPallete[paletteIndex + 1];
                 rawData[i + 1] = pcx.header.mainColorPallete[paletteIndex + 2];
@@ -320,17 +318,12 @@ module Quake2Tools {
                 rawData[i + 3] = 255;
             }
 
-
             this.drawPcxImagePalette(pcx.header.mainColorPallete);
 
             Debugging.debug("Raw data", rawData);
 
-            pcxCanvas.width = pcx.header.horizontalResolution;
-            pcxCanvas.height = pcx.header.verticalResolution;
             pcxCanvas.setAttribute("style", "border: 1px solid #000");
             context.putImageData(imageData, 0, 0);
-
-            
             previewPane.appendChild(pcxCanvas);
         }
 
