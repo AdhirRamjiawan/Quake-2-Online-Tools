@@ -316,28 +316,25 @@ module Quake2Tools {
             var renderedImage = [];
             var imageSize = ((pcx.header.maxX + 1) * (pcx.header.maxY + 1));
 
-            /*if (pcx.data.length !== imageSize) {
-                Debugging.debug("pcx.data.length", pcx.data.length, imageSize);
-                alert('Invalid pcx data');
-                return;
-            }*/
             pcxCanvas.width = pcx.header.maxX + 1;
             pcxCanvas.height = pcx.header.maxY + 1;
 
-            var j = 0;
+            var canvasImageDataIndex = 0;
 
             for (var i =0; i < imageSize; i++) {
-                var paletteIndex = pcx.data[i];
+                var paletteIndex = (pcx.data[i] + 1) * 3;
 
-                rawData[j] = pcx.header.mainColorPallete[paletteIndex + 1];
-                rawData[j + 1] = pcx.header.mainColorPallete[paletteIndex + 2];
-                rawData[j + 2] = pcx.header.mainColorPallete[paletteIndex + 3];
-                rawData[j + 3] = 255;
+                rawData[canvasImageDataIndex] = pcx.header.mainColorPallete[paletteIndex - 3];
+                rawData[canvasImageDataIndex + 1] = pcx.header.mainColorPallete[paletteIndex - 2];
+                rawData[canvasImageDataIndex + 2] = pcx.header.mainColorPallete[paletteIndex - 1];
+                rawData[canvasImageDataIndex + 3] = 255;
 
-                j+=4;
+                canvasImageDataIndex+=4;
             }
 
-            this.drawPcxImagePalette(pcx.header.mainColorPallete);
+            if (Debugging.isDebug) {
+                this.drawPcxImagePalette(pcx.header.mainColorPallete);
+            }
             
             pcxCanvas.setAttribute("style", "border: 1px solid #000");
             context.putImageData(imageData, 0, 0);
