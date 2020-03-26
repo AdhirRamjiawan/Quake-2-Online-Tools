@@ -27,7 +27,7 @@ module Quake2Tools {
             if (result.header.encoding === 1) { // Run Length Encoding
                 result.data = this.extractRLEData(
                     this.dataView, 
-                    this.position + 129, 
+                    this.position + 128, 
                     this.length - 769);
             } else {
                 result.data = DataViewUtils.getBinaryData(this.dataView, this.position + 128, this.length - 769);
@@ -52,6 +52,7 @@ module Quake2Tools {
                     for (var rleIndex = 0; rleIndex < rleDiff; rleIndex++) {
                         result.push(colorByte);
                     }
+                    i++; // we've already read the colour byte
                 } else {
                     result.push(metaByte);
                 }

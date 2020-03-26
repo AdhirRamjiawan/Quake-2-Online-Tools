@@ -277,23 +277,20 @@ module Quake2Tools {
 
 
         private drawPcxImagePalette(data:Uint8Array) {
+            var dataLength = data.length;
             let previewPane = <HTMLElement>document.getElementById("previewPane");
             let paletteCanvas = <HTMLCanvasElement>document.createElement("canvas");
             var context =  <CanvasRenderingContext2D>paletteCanvas.getContext("2d");
             var imageData = <ImageData>context.createImageData(200, 200);
             var rawData = <Uint8ClampedArray>imageData.data;
 
-            var dataLength = data.length * 4;
-
             for (var i =0; i < dataLength; i+=4) {
-                rawData[i] = data[i + 1];
-                rawData[i + 1] = data[i + 2];
-                rawData[i + 2] = data[i + 3];
+                rawData[i] = data[i];
+                rawData[i + 1] = data[i + 1];
+                rawData[i + 2] = data[i + 2];
                 rawData[i + 3] = 255;
             }
 
-            paletteCanvas.width = 200;
-            paletteCanvas.height = 200;
             paletteCanvas.setAttribute("style", "border: 1px solid #000");
             context.putImageData(imageData, 0, 0);
 
@@ -310,17 +307,24 @@ module Quake2Tools {
 
             previewPane.innerHTML = "";
 
+            var renderedImage = [];
+
             for (var i =0; i < pcx.data.length; i+=4) {
                 var paletteIndex = pcx.data[i];
-                rawData[i] = pcx.header.mainColorPallete[paletteIndex + 1];
-                rawData[i + 1] = pcx.header.mainColorPallete[paletteIndex + 2];
-                rawData[i + 2] = pcx.header.mainColorPallete[paletteIndex + 3];
+
+                rawData[i] = pcx.header.mainColorPallete[paletteIndex];
+                rawData[i + 1] = pcx.header.mainColorPallete[paletteIndex + 1];
+                rawData[i + 2] = pcx.header.mainColorPallete[paletteIndex + 2];
                 rawData[i + 3] = 255;
+
+                renderedImage.push(pcx.header.mainColorPallete[paletteIndex]);
+                renderedImage.push(pcx.header.mainColorPallete[paletteIndex + 1]);
+                renderedImage.push(pcx.header.mainColorPallete[paletteIndex + 2]);
             }
 
             this.drawPcxImagePalette(pcx.header.mainColorPallete);
 
-            Debugging.debug("Raw data", rawData);
+            Debugging.debug("rendered iamge data", renderedImage);
 
             pcxCanvas.setAttribute("style", "border: 1px solid #000");
             context.putImageData(imageData, 0, 0);
