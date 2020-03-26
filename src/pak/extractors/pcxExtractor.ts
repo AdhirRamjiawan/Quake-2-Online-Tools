@@ -21,7 +21,7 @@ module Quake2Tools {
                 result.header.mainColorPallete = 
                     DataViewUtils.getBinaryData(this.dataView, paletteStart, 768);
 
-                Debugging.debug("PCX color palette", this.length - 768, result.header.mainColorPallete);
+                Debugging.debug("PCX color palette", paletteStart, this.length - 768, result.header.mainColorPallete);
             }
 
             if (result.header.encoding === 1) { // Run Length Encoding
@@ -29,8 +29,6 @@ module Quake2Tools {
                     this.dataView, 
                     this.position + 128, 
                     this.length - 769);
-            } else {
-                result.data = DataViewUtils.getBinaryData(this.dataView, this.position + 128, this.length - 769);
             }
 
             Debugging.debug("Pcx data", result.data);
@@ -47,7 +45,7 @@ module Quake2Tools {
 
                 if (metaByte >= 192) {
                     var colorByte = dataView.getUint8(i + 1);
-                    var rleDiff = metaByte & 0x3F;
+                    var rleDiff = metaByte - 192;
 
                     for (var rleIndex = 0; rleIndex < rleDiff; rleIndex++) {
                         result.push(colorByte);

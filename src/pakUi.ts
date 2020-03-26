@@ -294,6 +294,12 @@ module Quake2Tools {
             paletteCanvas.setAttribute("style", "border: 1px solid #000");
             context.putImageData(imageData, 0, 0);
 
+
+            // just to make the palette more visible.
+            for (var i = 0; i < 100; i++) {
+                context.putImageData(context.getImageData(0, 0, 200, 2), 0, 2 + (i +1));
+            }
+
             previewPane.appendChild(paletteCanvas);
         }
 
@@ -302,30 +308,37 @@ module Quake2Tools {
             let previewPane = <HTMLElement>document.getElementById("previewPane");
             let pcxCanvas = <HTMLCanvasElement>document.createElement("canvas");
             var context =  <CanvasRenderingContext2D>pcxCanvas.getContext("2d");
-            var imageData = <ImageData>context.createImageData(pcx.header.horizontalResolution, pcx.header.verticalResolution);
+            var imageData = <ImageData>context.createImageData(pcx.header.maxX + 1, pcx.header.maxY + 1);
             var rawData = <Uint8ClampedArray>imageData.data;
 
             previewPane.innerHTML = "";
 
             var renderedImage = [];
+            var imageSize = ((pcx.header.maxX + 1) * (pcx.header.maxY + 1));
 
-            for (var i =0; i < pcx.data.length; i+=4) {
+            /*if (pcx.data.length !== imageSize) {
+                Debugging.debug("pcx.data.length", pcx.data.length, imageSize);
+                alert('Invalid pcx data');
+                return;
+            }*/
+            pcxCanvas.width = pcx.header.maxX + 1;
+            pcxCanvas.height = pcx.header.maxY + 1;
+
+            var j = 0;
+
+            for (var i =0; i < imageSize; i++) {
                 var paletteIndex = pcx.data[i];
 
-                rawData[i] = pcx.header.mainColorPallete[paletteIndex];
-                rawData[i + 1] = pcx.header.mainColorPallete[paletteIndex + 1];
-                rawData[i + 2] = pcx.header.mainColorPallete[paletteIndex + 2];
-                rawData[i + 3] = 255;
+                rawData[j] = pcx.header.mainColorPallete[paletteIndex + 1];
+                rawData[j + 1] = pcx.header.mainColorPallete[paletteIndex + 2];
+                rawData[j + 2] = pcx.header.mainColorPallete[paletteIndex + 3];
+                rawData[j + 3] = 255;
 
-                renderedImage.push(pcx.header.mainColorPallete[paletteIndex]);
-                renderedImage.push(pcx.header.mainColorPallete[paletteIndex + 1]);
-                renderedImage.push(pcx.header.mainColorPallete[paletteIndex + 2]);
+                j+=4;
             }
 
             this.drawPcxImagePalette(pcx.header.mainColorPallete);
-
-            Debugging.debug("rendered iamge data", renderedImage);
-
+            
             pcxCanvas.setAttribute("style", "border: 1px solid #000");
             context.putImageData(imageData, 0, 0);
             previewPane.appendChild(pcxCanvas);
