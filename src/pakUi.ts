@@ -321,9 +321,19 @@ module Quake2Tools {
 
             var canvasImageDataIndex = 0;
 
+            /* Need to maintain a separate index for the canvas image
+            *  else you will find that the image will appear smaller
+            *  and be repeated. */
+
             for (var i =0; i < imageSize; i++) {
+                // To get the correct triplet, use multiple of 3's
                 var paletteIndex = (pcx.data[i] + 1) * 3;
 
+                /* Since we got the highest index in the relevant triplet
+                *  we have to calculate as follows:
+                *  R component will be -3, 
+                *  G component will be -2,
+                *  B component will be -1 */
                 rawData[canvasImageDataIndex] = pcx.header.mainColorPallete[paletteIndex - 3];
                 rawData[canvasImageDataIndex + 1] = pcx.header.mainColorPallete[paletteIndex - 2];
                 rawData[canvasImageDataIndex + 2] = pcx.header.mainColorPallete[paletteIndex - 1];
@@ -348,18 +358,34 @@ module Quake2Tools {
             var context =  <CanvasRenderingContext2D>walCanvas.getContext("2d");
             var imageData = <ImageData>context.createImageData(wal.header.width, wal.header.height);
             var rawData = <Uint8ClampedArray>imageData.data;
-
             var walSize = wal.header.width * wal.header.height;
+            var colorMap: Pcx = this.extractor.getPcxImage(
+                this.extractor.archive.colorMap.position, 
+                this.extractor.archive.colorMap.length);
 
             walCanvas.width = wal.header.width;
             walCanvas.height = wal.header.height;
 
+            /* Need to maintain a separate index for the canvas image
+            *  else you will find that the image will appear smaller
+            *  and be repeated. */
             var canvasImageDataIndex = 0;
 
             for (var i =0; i < walSize; i++) {
-                rawData[canvasImageDataIndex] = wal.data[i];
-                rawData[canvasImageDataIndex + 1] = wal.data[i + 1];
-                rawData[canvasImageDataIndex + 2] = wal.data[i + 2];
+                // To get the correct triplet, use multiple of 3's
+                var paletteIndex = (wal.data[i] + 1) * 3;
+
+                /* Since we got the highest index in the relevant triplet
+                *  we have to calculate as follows:
+                *  R component will be -3, 
+                *  G component will be -2,
+                *  B component will be -1 */
+
+                /* Dont use the image data itself but use the main color palette on 
+                 * on the PCX file pic/colormap.pcx */
+                rawData[canvasImageDataIndex] = colorMap.header.mainColorPallete[paletteIndex - 3];
+                rawData[canvasImageDataIndex + 1] = colorMap.header.mainColorPallete[paletteIndex  - 2];
+                rawData[canvasImageDataIndex + 2] = colorMap.header.mainColorPallete[paletteIndex - 1];
                 rawData[canvasImageDataIndex + 3] = 255; // zero alpha
 
                 canvasImageDataIndex+=4;

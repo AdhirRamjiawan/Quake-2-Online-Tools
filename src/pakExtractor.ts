@@ -16,7 +16,8 @@ module Quake2Tools {
         private littleEndian: boolean = true;
         private seekIndex : number = 0;
         private reader = new FileReader();
-        private dataView:DataView = new DataView(new ArrayBuffer(0));
+        public dataView:DataView = new DataView(new ArrayBuffer(0));
+        private colorMapLumpName:string = "pics/colormap.pcx";
 
         public archive: PakArchive;
         public wavExtractor: WavExtractor = new WavExtractor();
@@ -91,6 +92,11 @@ module Quake2Tools {
                     // 5. f. write new file stream for lump as a new file and go back to 5.a. to repeat the process for all lumps.
 
                     this.archive.lumpCollection.lumps.push(new PakLump(lumpName, lumpFilePosition, lumpFileLength));
+
+                    if (lumpName.indexOf(this.colorMapLumpName) !== -1 ) {
+                        this.archive.colorMap = new PakLump(lumpName, lumpFilePosition, lumpFileLength);
+                    }
+
                 }
                 callback(this.archive.toJson());
             };
