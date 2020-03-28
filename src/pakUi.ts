@@ -348,22 +348,24 @@ module Quake2Tools {
             var context =  <CanvasRenderingContext2D>walCanvas.getContext("2d");
             var imageData = <ImageData>context.createImageData(wal.header.width, wal.header.height);
             var rawData = <Uint8ClampedArray>imageData.data;
-            var clampedWalData = Uint8ClampedArray.from(wal.data);
 
-            var walSize = wal.header.width * wal.header.height * 3;
+            var walSize = wal.header.width * wal.header.height;
 
-            Debugging.debug("Clamped wal data", clampedWalData);
+            walCanvas.width = wal.header.width;
+            walCanvas.height = wal.header.height;
 
-            for (var i =0; i < walSize; i+=4) {
-                rawData[i] = clampedWalData[i];
-                rawData[i + 1] = clampedWalData[i + 1];
-                rawData[i + 2] = clampedWalData[i + 2];
-                rawData[i + 3] = 255; // zero alpha
+            var canvasImageDataIndex = 0;
+
+            for (var i =0; i < walSize; i++) {
+                rawData[canvasImageDataIndex] = wal.data[i];
+                rawData[canvasImageDataIndex + 1] = wal.data[i + 1];
+                rawData[canvasImageDataIndex + 2] = wal.data[i + 2];
+                rawData[canvasImageDataIndex + 3] = 255; // zero alpha
+
+                canvasImageDataIndex+=4;
             }
 
             walCanvas.setAttribute("style", "border: 1px solid #000");
-            walCanvas.width = wal.header.width;
-            walCanvas.height = wal.header.height;
             context.putImageData(imageData, 0, 0);
 
             previewPane.innerHTML = "";
