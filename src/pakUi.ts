@@ -248,6 +248,8 @@ module Quake2Tools {
                 this.drawWalTexture(lump.position, lump.length);
             } else if (lump.fileExtension === "pcx") {
                 this.drawPcxImage(lump.position, lump.length);
+            } else if (lump.fileExtension === "md2") {
+                this.drawMd2Model(lump.position, lump.length);
             }
 
             this.setLogo(false);
@@ -275,6 +277,9 @@ module Quake2Tools {
             select.selectedIndex = 0;
         }
 
+        private drawMd2Model(position: number, length: number) {
+            let md2:Md2 = this.extractor.getMd2Model(position, length);
+        }
 
         private drawPcxImagePalette(data:Uint8Array) {
             var dataLength = data.length;

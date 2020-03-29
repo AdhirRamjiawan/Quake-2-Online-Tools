@@ -127,12 +127,21 @@ module Quake2Tools {
             return bufView;
         }
 
+        // all these extract functions can be abstracted into interfaces
         public getWavSound(position:number, length:number) : Wav {
             let wavExtractor = new WavExtractor();
             wavExtractor.dataView = this.dataView;
             wavExtractor.position = position;
             wavExtractor.length = length;
             return wavExtractor.extract();
+        }
+
+        public getMd2Model(position:number, length:number): Md2 {
+            let md2Extractor = new Md2Extractor();
+            md2Extractor.dataView = this.dataView;
+            md2Extractor.position = position;
+            md2Extractor.length = length;
+            return md2Extractor.extract();
         }
 
         public getWalTexture(position:number, length:number) : Wal {
