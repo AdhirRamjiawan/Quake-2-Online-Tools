@@ -1,6 +1,9 @@
 
+import { Dto } from "../dto"
+import { PakHeader } from "./pakHeader"
+import { PakLumpCollection } from "./pakLumpCollection"
+import { PakLump } from "./pakLump"
 
-module Quake2Tools{
     export class PakArchive implements Dto {
         public header:PakHeader;
         public lumpCollection: PakLumpCollection;
@@ -20,4 +23,3 @@ module Quake2Tools{
             }
         }
     }
-}

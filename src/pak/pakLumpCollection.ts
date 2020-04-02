@@ -1,19 +1,20 @@
-module Quake2Tools {
-    export class PakLumpCollection implements Dto {
-        public lumps:Array<PakLump>;
+import { Dto } from "../dto"
+import { PakLump } from "./pakLump"
 
-        constructor(){
-            this.lumps = new Array<PakLump>();
-        }
+export class PakLumpCollection implements Dto {
+    public lumps: Array<PakLump>;
 
-        public toJson(): object {
-            var result = new Array<object>();
+    constructor() {
+        this.lumps = new Array<PakLump>();
+    }
 
-            this.lumps.forEach((lump: PakLump) => {
-                result.push(lump.toJson())
-            });
+    public toJson(): object {
+        var result = new Array<object>();
 
-            return result;
-        }
+        this.lumps.forEach((lump: PakLump) => {
+            result.push(lump.toJson())
+        });
+
+        return result;
     }
 }

@@ -1,18 +1,16 @@
+import { Dto } from "../dto"
 
+export class PakLump implements Dto {
+    constructor(
+        public name: string,
+        public position: number,
+        public length: number) { }
 
-module Quake2Tools{
-    export class PakLump implements Dto {
-        constructor(
-            public name:string,
-            public position:number,
-            public length:number) {}
-
-        public toJson() : object {
-            return {
-                name: this.name,
-                position: this.position,
-                length: this.length
-            }
+    public toJson(): object {
+        return {
+            name: this.name,
+            position: this.position,
+            length: this.length
         }
     }
 }

@@ -1,5 +1,3 @@
-module Quake2Tools {
-    export interface Dto {
-        toJson() : object;
-    }
+export interface Dto {
+    toJson(): object;
 }
