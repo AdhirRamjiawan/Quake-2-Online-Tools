@@ -5,35 +5,16 @@
         <link rel="icon" href="img/favicon.ico" type="image/x-icon">
         
         <link href="styles.css" rel="stylesheet" type="text/css"/>
-        <script src="node_modules/three/build/three.js"></script>
-        <script src="node_modules/systemjs/dist/system.js"></script>
-        <script type="text/javascript" src="node_modules/systemjs/dist/extras/named-register.js"></script>
-        <script src="/dist/q2tools.js"></script>
+
+        <script src="dist/bundle.js"></script>
         <script>
             var pakUi;
-            
-            System.register("three", [], function (exports_1, context_1) {
-                "use strict";
-                var __moduleName = context_1 && context_1.id;
-                return {
-                    setters: [],
-                    execute: function () {
-                    }
-                };
-            });
-
-            System
-                .import('three')
-                .then(function(three){
-                    System
-                        .import('pakUi')
-                        .then(function(Quake2Tools) {
-                            console.log(Quake2Tools);
-                            pakUi = new Quake2Tools.PakUi();
-                        });
-            });
-            
+            window.onload = function() {
+                console.log(Q2Tools.PakUi);
+                pakUi = new Q2Tools.PakUi();
+            };
         </script>
+
     </head>
     <body>
         <div class="header">

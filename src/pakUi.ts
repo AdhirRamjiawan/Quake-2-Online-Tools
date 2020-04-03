@@ -298,6 +298,8 @@ export class PakUi {
         var camera, scene, renderer;
         var geometry, material, mesh;
 
+        console.log('THREE', THREE);
+
         camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 10);
         camera.position.z = 1;
 
