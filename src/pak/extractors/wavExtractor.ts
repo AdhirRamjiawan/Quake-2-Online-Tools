@@ -105,7 +105,9 @@ export class WavExtractor {
             result.subChunk2Id,
             result.subChunk2Size,
             result.data.length,
-            result.data);
+            result.data,
+            result.data16.length,
+            result.data16);
 
         return result;
     }

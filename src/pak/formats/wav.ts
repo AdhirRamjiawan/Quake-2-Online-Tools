@@ -24,11 +24,11 @@ export class WavDataSubChunk {
     public subChunk2Id: string = '';
     public subChunk2Size: number = 0;
     public data: Uint8Array;
-    public data16: Uint16Array;
+    public data16: Int16Array;
 
     constructor() {
         this.data = new Uint8Array(0);
-        this.data16 = new Uint16Array(0);
+        this.data16 = new Int16Array(0);
     }
 }
 

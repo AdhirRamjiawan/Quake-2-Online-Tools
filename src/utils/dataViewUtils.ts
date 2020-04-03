@@ -12,7 +12,7 @@ export class DataViewUtils {
 
     public static getString16(dataView: DataView, seekIndex: number, offset: number, littleEndian: boolean = true): string {
         let bufView: Uint16Array = new Uint16Array(dataView.buffer, seekIndex, offset);
-        let numberArray: number[] = this.Uint16ArrayToNumberArray(bufView);
+        let numberArray: number[] = this.Int16ArrayToNumberArray(bufView);
         let result = String.fromCharCode.apply(null, numberArray);
         return result;
     }
@@ -26,7 +26,7 @@ export class DataViewUtils {
         return result;
     }
 
-    public static Uint16ArrayToNumberArray(array: Uint16Array): number[] {
+    public static Int16ArrayToNumberArray(array: Int16Array): number[] {
         let result: number[] = [];
 
         for (var index = 0; index < array.length; index++)
@@ -39,8 +39,8 @@ export class DataViewUtils {
         return new Uint8Array(dataView.buffer, seekIndex, offset);
     }
 
-    public static getBinaryData16(dataView: DataView, seekIndex: number, offset: number): Uint16Array {
-        return new Uint16Array(dataView.buffer, seekIndex, offset);
+    public static getBinaryData16(dataView: DataView, seekIndex: number, offset: number): Int16Array {
+        return new Int16Array(dataView.buffer, seekIndex, offset);
     }
 
     public static getFloat32(

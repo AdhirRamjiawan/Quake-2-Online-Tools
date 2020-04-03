@@ -559,16 +559,8 @@ export class PakUi {
                 * wav.fmtSubChunk.blockAlign);
 
         var maxAmplitude = 0;
-
-        // need the max amplitude to normal sound data between 0..1
-        if (wav.fmtSubChunk.bitsPerSample === 8) {
-            maxAmplitude = Math.max(...DataViewUtils.Uint8ArrayToNumberArray(wav.dataSubChunk.data));
-        } else if (wav.fmtSubChunk.bitsPerSample === 16) {
-            // need the max amplitude to normal sound data between 0..1
-            maxAmplitude = Math.max(...DataViewUtils.Uint16ArrayToNumberArray(wav.dataSubChunk.data16));
-        }
         Debugging.debug("wav.fmtSubChunk.bitsPerSample", wav.fmtSubChunk.bitsPerSample);
-        Debugging.debug("maxAmplitude", maxAmplitude);
+        
 
         var buffer = context.createBuffer(
             wav.fmtSubChunk.numChannels,
@@ -577,9 +569,24 @@ export class PakUi {
 
         var currentBufferedData = buffer.getChannelData(0);
 
-        for (var i = 0; i < frameCount; i++) {
-            currentBufferedData[i] =
-                (wav.dataSubChunk.data[i] / maxAmplitude);
+        // need the max amplitude to normal sound data between 0..1
+        if (wav.fmtSubChunk.bitsPerSample === 8) {
+            maxAmplitude = Math.max(...DataViewUtils.Uint8ArrayToNumberArray(wav.dataSubChunk.data));
+            Debugging.debug("maxAmplitude", maxAmplitude);
+
+            for (var i = 0; i < frameCount; i++) {
+                currentBufferedData[i] =
+                    (wav.dataSubChunk.data[i] / maxAmplitude);
+            }
+        } else if (wav.fmtSubChunk.bitsPerSample === 16) {
+            // need the max amplitude to normal sound data between 0..1
+            maxAmplitude = Math.max(...DataViewUtils.Int16ArrayToNumberArray(wav.dataSubChunk.data16));
+            Debugging.debug("maxAmplitude", maxAmplitude);
+
+            for (var i = 0; i < frameCount; i++) {
+                currentBufferedData[i] =
+                    (wav.dataSubChunk.data16[i] / maxAmplitude);
+            }
         }
 
         var bufferSource = context.createBufferSource();
