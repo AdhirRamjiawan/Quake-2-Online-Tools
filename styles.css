@@ -126,6 +126,7 @@ a:active {
 }
 
 .summary-stats {
+    display:none;
     float: left;
     margin-top: 10px;
 }
@@ -133,16 +134,17 @@ a:active {
 .lump-results {
     float: right;
     margin-top: 10px;
+    width: 100%;
 }
 
 .lump-fieldset {
     float: left;
-    width: 50%;
+    width: 40%;
 }
 
 .preview-pane-fieldset {
     float: right;
-    width: 40%;
+    width: 50%;
 }
 
 #splash-screen {

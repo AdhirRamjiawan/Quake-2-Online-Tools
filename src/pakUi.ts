@@ -294,25 +294,30 @@ export class PakUi {
         // draw model using WebGL
         let previewPane = <HTMLElement>document.getElementById("previewPane");
         let modelCanvas: HTMLCanvasElement;
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
 
-        var camera, scene, renderer;
-        var geometry, material, mesh;
+        var renderer = new THREE.WebGLRenderer();
+        renderer.setSize( 500, 500);
 
-        console.log('THREE', THREE);
+        var geometry = new THREE.BoxGeometry();
+        var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+        var cube = new THREE.Mesh( geometry, material );
+        scene.add( cube );
 
-        camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 10);
-        camera.position.z = 1;
+        camera.position.z = 5;
 
-        scene = new THREE.Scene();
+        var animate = function () {
+            requestAnimationFrame( animate );
 
-        geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
-        material = new THREE.MeshNormalMaterial();
+            cube.rotation.x += 0.01;
+            cube.rotation.y += 0.01;
 
-        mesh = new THREE.Mesh(geometry, material);
-        scene.add(mesh);
+            renderer.render( scene, camera );
+        };
 
-        renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
+        animate();
+        previewPane.innerHTML = "";
         previewPane.appendChild(renderer.domElement);
 
     }
