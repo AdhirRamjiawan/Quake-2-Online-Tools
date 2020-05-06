@@ -6,3 +6,5 @@ taking some common quake 2 tools and porting them to typescript to be used onlin
 npm install
 npm install -g tsc
 npm install -g npx
+
+npx webpack
