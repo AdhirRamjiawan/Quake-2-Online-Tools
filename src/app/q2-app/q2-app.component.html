@@ -1,10 +1,7 @@
 <div class="header">
     <div class="header-left">
         <div class="tool-tab-group">
-            <button class="menu-button" onclick="pakUi.showToolTab('pak', this)">Pak Extractor</button>
-            <button class="menu-button" onclick="pakUi.showToolTab('2', this)">Tool 2</button>
-            <button class="menu-button" onclick="pakUi.showToolTab('3', this)">Tool 3</button>
-            <button class="menu-button" onclick="pakUi.showToolTab('4', this)">Tool 4</button>
+            <button class="menu-button" (click)="showTool(ToolType.PakExtractor)">Pak Extractor</button>
         </div>
     </div>
 
@@ -14,96 +11,6 @@
     </div>
 </div>
 
-<div class="tool-tab" id="tool-tab-pak">
-    <br/>
-    <h2>Pak extractor</h2>
+<app-pak-extractor *ngIf="showPakExtractor">
 
-    <fieldset>
-        <legend>
-            <h3>Browse Pak</h3>
-        </legend>
-        <input type="file" id="fileModel" onchange="pakUi.setPakFile(event)" />
-        <button id="btnView" onclick="pakUi.extractArchive()">View Archive</button>
-        <button id="btnView" onclick="pakUi.saveAndDownladArchive()">Save and Download Archive</button>
-    </fieldset>
-
-    <fieldset class="lump-fieldset">
-        <legend>
-            <h3>Lumps</h3>
-        </legend>
-
-        <label>Search: </label><input type="text" id="searchTerm"/><button onclick="pakUi.search()">Search in Archive</button><br/>
-        <br/>
-        <hr/>
-
-        <!-- summary should rather be in a pop up-->
-        <div class="summary-stats">
-            <table>
-                <caption>Summary Stats</caption>
-                <thead>
-                    <th>Extension</th>
-                    <th>Count</th>
-                </thead>
-                <tbody id="summaryStatsTableBody">
-                    
-                </tbody>
-            </table>
-        </div>
-
-        <div class="lump-results">
-            <label>Page </label><input type="text" readonly id="pageNumber"/>
-            Page Size<select id="pageSize" onchange="pakUi.updatePageSize()">
-                <option value="15" selected>15</option>
-                <option value="30">30</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-                <option value="200">200</option>
-                <option value="500">500</option>
-            </select>
-            <div>
-
-                <div id="paginationButtonList" class="pagination-button-list">
-                
-                </div>
-            </div>
-            <table>
-                <caption>Lump files</caption>
-                <thead>
-                    <th>Action</th>
-                    <th>Path</th>
-                    <th>Size (KB)</th>
-                </thead>
-                <tbody id="lumpTableBody">
-                    
-                </tbody>
-            </table>
-            <div id="paginationButtonList2" class="pagination-button-list">
-                
-            </div>
-        </div>
-    </fieldset>
-    
-    <fieldset class="preview-pane-fieldset">
-        <legend>
-            <h3>Preview pane</h3>
-        </legend>
-    
-        <div>
-            <div id="previewPane">
-            </div>
-        </div>
-    </fieldset>
-    
-</div>
-<div class="tool-tab" id="tool-tab-2">
-    <br/>
-    <h2>Tool 2</h2>
-</div>
-<div class="tool-tab" id="tool-tab-3">
-    <br/>
-    <h2>Tool 3</h2>
-</div>
-<div class="tool-tab" id="tool-tab-4">
-    <br/>
-    <h2>Tool 4</h2>
-</div>
+</app-pak-extractor>
