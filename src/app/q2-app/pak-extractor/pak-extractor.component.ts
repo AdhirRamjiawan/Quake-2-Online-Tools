@@ -6,15 +6,16 @@ import { Pcx } from './pak/formats/pcx';
 import { Wal } from './pak/formats/wal';
 import { Wav } from './pak/formats/wav';
 import { DataViewUtils } from './utils/dataViewUtils';
+import { PakArchive } from './pak/pakArchive';
 
-interface IUiLump {
+export interface IUiLump {
   fileExtension: string;
   name: string;
   position: number;
   length: number;
 }
 
-interface IUiSummaryStats {
+export interface IUiSummaryStats {
   extension: string;
   count: number;
 }
@@ -45,7 +46,7 @@ export class PakExtractorComponent implements OnInit {
     /* We need to wrap this call back to extractArchive
      * into a arrow function to preserve the context of
      * `this`. */
-    this.pakExtractor.extractArchive((data: any) => {
+    this.pakExtractor.extractArchive((data: PakArchive) => {
       this.displayArchive(data);
       this.setLogo(false);
     });
@@ -55,24 +56,23 @@ export class PakExtractorComponent implements OnInit {
     this.saveAndDownloadArchive();
   }
 
-  search(): void {
+  search(searchTerm: string): void {
     this.setLogo(true);
-    let searchTerm = <HTMLInputElement>document.getElementById("searchTerm");
     this.filteredLumps = [];
 
-    console.log("searching: [" + searchTerm.value + "]");
+    console.log("searching: [" + searchTerm + "]");
 
-    if (searchTerm.value.trim() === "") {
+    if (searchTerm.trim() === "") {
         this.filteredLumps = this.globalArchive.lumps;
     } else {
         for (var i = 0; i < this.globalArchive.lumps.length; i++) {
-            if (this.globalArchive.lumps[i].name.indexOf(searchTerm.value) > -1)
+            if (this.globalArchive.lumps[i].name.indexOf(searchTerm) > -1)
                 this.filteredLumps.push(this.globalArchive.lumps[i]);
         }
     }
 
-    this.loadArchivePage(0);
-    this.displayPaginationButtons();
+    //this.loadArchivePage(0);
+    //this.displayPaginationButtons();
     this.setLogo(false);
   }
 
@@ -132,45 +132,8 @@ public displayArchive(archive: any) {
         });
     }
 
-    this.loadArchivePage(0);
-    this.displayPaginationButtons();
-}
-
-public progressLumpTablePaginationStartIndex() {
-    this.lumpTablePaginationStartIndex++;
-    this.loadArchivePage(this.lumpTablePaginationStartIndex);
-}
-
-public regressLumpTablePaginationStartIndex() {
-    this.lumpTablePaginationStartIndex--;
-    this.loadArchivePage(this.lumpTablePaginationStartIndex);
-}
-
-private displayPaginationButtons() {
-    let paginationButtonList = <HTMLElement>document.getElementById("paginationButtonList");
-    let paginationButtonList2 = <HTMLElement>document.getElementById("paginationButtonList2");
-    var paginationButtonListMarkup = "";
-
-    var numberOfButtons = this.filteredLumps.length / this.paginationSize;
-
-    paginationButtonListMarkup += '<button onclick="pakUi.regressLumpTablePaginationStartIndex()">&lt;&lt;</button>';
-
-    for (let i = this.lumpTablePaginationStartIndex; i < this.lumpTablePaginationStartIndex + 3; i++) {
-        paginationButtonListMarkup += this.createPaginationButton(i);
-    }
-
-    for (let i = 0; i < 3; i++) {
-        paginationButtonListMarkup += "<span> . </span>";
-    }
-
-    for (let i = numberOfButtons - 3; i < numberOfButtons; i++) {
-        paginationButtonListMarkup += this.createPaginationButton(Math.floor(i));
-    }
-
-    paginationButtonListMarkup += '<button onclick="pakUi.progressLumpTablePaginationStartIndex()">&gt;&gt;</button>';
-
-    paginationButtonList.innerHTML = paginationButtonListMarkup;
-    paginationButtonList2.innerHTML = paginationButtonListMarkup;
+    //this.loadArchivePage(0);
+    //this.displayPaginationButtons();
 }
 
 private getDistinct(list: Array<IUiSummaryStats>): Array<IUiSummaryStats> {
@@ -241,7 +204,6 @@ private loadArchivePage(pageNumber: number) {
     lumpTable.innerHTML = tableDataMarkup;
     pageNumberTextBox.setAttribute("value", (pageNumber + 1).toString());
 
-    this.displayPaginationButtons();
 }
 
 public previewFile(filteredLumpIndex: number) {
@@ -276,7 +238,8 @@ public downloadFile(filteredLumpIndex: number) {
     URL.revokeObjectURL(dataUri);
 }
 
-public onChangeLumpAction(filteredLumpIndex: number, select: HTMLSelectElement) {
+public onChangeLumpAction(filteredLumpIndex: number, eventTarget: EventTarget | null) {
+    var select: HTMLSelectElement = <HTMLSelectElement>eventTarget;
     var action: string = select.value;
 
     if (action === 'download') {

@@ -16,7 +16,8 @@
             <h3>Lumps</h3>
         </legend>
 
-        <label>Search: </label><input type="text" id="searchTerm"/><button (click)="search()">Search in Archive</button><br/>
+        <label>Search: </label><input type="text" /><button (click)="search('')">Search in Archive</button>
+        <br/>
         <br/>
         <hr/>
 
@@ -45,10 +46,6 @@
                 <option value="500">500</option>
             </select>
             <div>
-
-                <div id="paginationButtonList" class="pagination-button-list">
-                
-                </div>
             </div>
             <table>
                 <caption>Lump files</caption>
@@ -57,13 +54,21 @@
                     <th>Path</th>
                     <th>Size (KB)</th>
                 </thead>
-                <tbody id="lumpTableBody">
-                    
+                <tbody>
+                    <tr *ngFor="let lump of filteredLumps; let i = index">
+                        <td>
+                            <select (change)="onChangeLumpAction(i, $event.target)">
+                                <option value="">-- Select Action --</option>
+                                <option value="preview">Preview</option>
+                                <option value="download">Download</option>
+                                <option value="delete">Delete</option>
+                            </select>
+                        </td>
+                        <td>{{lump.name}}</td>
+                        <td>{{lump.length}}</td>
+                    </tr>
                 </tbody>
             </table>
-            <div id="paginationButtonList2" class="pagination-button-list">
-                
-            </div>
         </div>
     </fieldset>
     
