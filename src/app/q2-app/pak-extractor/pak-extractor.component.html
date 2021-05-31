@@ -47,17 +47,18 @@
             </select>
             <div>
             </div>
-            <table>
-                <caption>Lump files</caption>
-                <thead>
-                    <th>Action</th>
-                    <th>Path</th>
-                    <th>Size (KB)</th>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let lump of filteredLumps; let i = index">
+            <p-table [value]="filteredLumps" [paginator]="true" [rows]="15">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Action</th>
+                        <th>Path</th>
+                        <th>Size (KB)</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-lump let-rowIndex="rowIndex">
+                    <tr>
                         <td>
-                            <select (change)="onChangeLumpAction(i, $event.target)">
+                            <select (change)="onChangeLumpAction(rowIndex, $event.target)">
                                 <option value="">-- Select Action --</option>
                                 <option value="preview">Preview</option>
                                 <option value="download">Download</option>
@@ -67,8 +68,8 @@
                         <td>{{lump.name}}</td>
                         <td>{{lump.length}}</td>
                     </tr>
-                </tbody>
-            </table>
+                </ng-template>
+            </p-table>
         </div>
     </fieldset>
     

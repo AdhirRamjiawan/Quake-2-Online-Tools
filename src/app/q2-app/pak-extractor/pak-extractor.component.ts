@@ -7,6 +7,7 @@ import { Wal } from './pak/formats/wal';
 import { Wav } from './pak/formats/wav';
 import { DataViewUtils } from './utils/dataViewUtils';
 import { PakArchive } from './pak/pakArchive';
+import {TableModule} from 'primeng/table';
 
 export interface IUiLump {
   fileExtension: string;

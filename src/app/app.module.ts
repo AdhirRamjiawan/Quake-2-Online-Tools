@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { SplashScreenComponent } from './splash-screen/splash-screen.component';
 import { Q2AppComponent } from './q2-app/q2-app.component';
 import { PakExtractorComponent } from './q2-app/pak-extractor/pak-extractor.component';
+import {TableModule} from 'primeng/table';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { PakExtractorComponent } from './q2-app/pak-extractor/pak-extractor.comp
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    TableModule
   ],
   providers: [],
   bootstrap: [AppComponent]
