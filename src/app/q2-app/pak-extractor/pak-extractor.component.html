@@ -16,7 +16,7 @@
             <h3>Lumps</h3>
         </legend>
 
-        <label>Search: </label><input type="text" /><button (click)="search('')">Search in Archive</button>
+        <label>Search: </label><input type="text" #searchTerm/><button (click)="search(searchTerm.value)">Search in Archive</button>
         <br/>
         <br/>
         <hr/>
