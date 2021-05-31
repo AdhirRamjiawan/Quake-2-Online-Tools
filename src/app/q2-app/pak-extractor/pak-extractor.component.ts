@@ -106,9 +106,9 @@ export class PakExtractorComponent implements OnInit {
     var logo: HTMLImageElement = <HTMLImageElement>document.getElementById("logo");
 
     if (isLoading) {
-        logo.src = "img/loading.gif";
+        logo.src = "assets/img/loading.gif";
     } else {
-        logo.src = "img/logo-gray.png";
+        logo.src = "assets/img/logo-gray.png";
     }
     }
 
